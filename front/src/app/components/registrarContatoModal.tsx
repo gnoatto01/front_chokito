@@ -1,5 +1,5 @@
 import { useState } from "react";
-import AlertaDeSucesso from "./alertaDeSucesso";
+import { AlertaDeSucesso } from "./alertas";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
@@ -15,6 +15,7 @@ interface DadosFormulario {
     email: string;
     telefone: string;
     whatsapp: string;
+    descricacaoContato: string;
 }
 
 export function RegistrarContatoModal({ isAberto, onFechar }: ModalRegistroContato) {
@@ -33,7 +34,8 @@ export function RegistrarContatoModal({ isAberto, onFechar }: ModalRegistroConta
                 nomeContato: dados.nomeContato,
                 email: dados.email,
                 telefone: dados.telefone,
-                whatsapp: dados.whatsapp
+                whatsapp: dados.whatsapp,
+                descricaoContato: dados.descricacaoContato
             });
 
             setMensagemErro('');
@@ -91,6 +93,15 @@ export function RegistrarContatoModal({ isAberto, onFechar }: ModalRegistroConta
                             className="w-full"
                             autoComplete="off"
                             {...register('whatsapp', { required: true })}
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <Input
+                            type="text"
+                            placeholder="Descrição contato"
+                            className="w-full"
+                            autoComplete="off"
+                            {...register('descricacaoContato', { required: true })}
                         />
                     </div>
                     {mensagemErro && (
