@@ -27,7 +27,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     async function signIn({ usuario, senhaUsuario }: dadosFormulario) {
         try {
-            const response = await axios.post('http://localhost:8080/naturalbit/api/login', { usuario, senhaUsuario });
+            const response = await axios.post('http://localhost:8080/suportebit/login', { usuario, senhaUsuario });
 
             console.log(response.data);
             setIsAuthenticated(true);

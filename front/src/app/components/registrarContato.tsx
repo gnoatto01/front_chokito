@@ -6,6 +6,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import axios from "axios";
 import { useState } from "react";
 import { AlertaDeSucesso } from "./alertas";
+import ReactInputMask from "react-input-mask";
 
 
 interface DadosContato {
@@ -26,12 +27,12 @@ interface DialogProps {
 function RegistroContato({ isOpen, onClose }: DialogProps) {
     const [errorMessage, setErrorMessage] = useState('');
     const [isSuccesso, setIsSuccesso] = useState(false);
-    const { register, handleSubmit, formState: { errors } } = useForm<DadosContato>();
-  
+    const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<DadosContato>();
+
     const registroContato: SubmitHandler<DadosContato> = async (dados) => {
 
         try {
-            await axios.post('http://localhost:8080/naturalbit/api/registrar-contato', {
+            await axios.post('http://localhost:8080/suportebit/registrar-contato', {
                 nomeContato: dados.nomeContato,
                 email: dados.email,
                 telefone: dados.telefone,
@@ -100,11 +101,14 @@ function RegistroContato({ isOpen, onClose }: DialogProps) {
                                     </div>
                                     <div className="relative">
                                         <Label htmlFor="whatsapp">Whatsapp*</Label>
+
                                         <Input
                                             id="whatsapp"
                                             placeholder="Insira o Whatsapp do contato"
                                             autoComplete="off"
-                                            {...register('whatsapp', { required: true })}
+                                            {...register('whatsapp', {
+                                                required: true
+                                            })}
                                         />
                                         {errors.whatsapp && <span className="text-[#EA4335]">O Whatsapp do contato é obrigatório.</span>}
                                     </div>

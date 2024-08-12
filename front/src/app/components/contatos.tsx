@@ -6,7 +6,6 @@ import { destroyCookie, parseCookies } from "nookies";
 import { useEffect, useState } from "react";
 import { IconeDetalhes } from "./icones";
 import { Input } from "@/components/ui/input";
-import { RegistrarContatoModal } from "./registrarContatoModal";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import DetalhesContato from "./detalhesContato";
 import AlertaDePerigo, { AlertaDeSucesso } from "./alertas";
@@ -25,7 +24,7 @@ interface retornoContato {
     descricaoContato: string;
 }
 
-//TODO: colocar opcao de exportar para Excel, e gerar relatorios em PDF
+//TODO: Fazer dar reload na tabela quando excluir ou incluir um novo registro
 
 export default function Contatos() {
 
@@ -46,7 +45,7 @@ export default function Contatos() {
                 const accessToken = cookies['naturalbit.token'];
 
                 if (accessToken) {
-                    const resposta = await axios.get<retornoContato[]>("http://localhost:8080/naturalbit/api/contatos", {
+                    const resposta = await axios.get<retornoContato[]>("http://localhost:8080/suportebit/contatos", {
                         headers: {
                             Authorization: `Bearer ${accessToken}`,
                         },
@@ -113,7 +112,7 @@ export default function Contatos() {
     const confirmacaoDeDelecao = async () => {
         if (salvarOpcaoDelete !== null) {
             try {
-                await axios.delete(`http://localhost:8080/naturalbit/api/deletar-contato/${salvarOpcaoDelete}`);
+                await axios.delete(`http://localhost:8080/suportebit/deletar-contato/${salvarOpcaoDelete}`);
                 setMensagemErro('');
                 setIsSucesso(true);
                 setTimeout(() => {

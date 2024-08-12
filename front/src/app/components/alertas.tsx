@@ -1,4 +1,5 @@
 import { Alert } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import React, { JSX, SVGProps } from "react"
 
@@ -39,10 +40,10 @@ const AlertaDePerigo: React.FC<AlertaDeConfirmacaoProps> = ({ isAberto, onFechar
                 </AlertDialogDescription>
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
                     <AlertDialogCancel asChild>
-                        <button className="bg-[#34A853]" onClick={onFechar}>Não</button>
+                        <Button className="bg-[#34A853] hover:bg-[#2E8B47]" onClick={onFechar}>Não</Button>
                     </AlertDialogCancel>
                     <AlertDialogAction asChild>
-                        <button className="bg-[#EA4335]" onClick={onConfirmacao}>Sim</button>
+                        <Button className="bg-[#EA4335] hover:bg-[#D3322D]" onClick={onConfirmacao}>Sim</Button>
                     </AlertDialogAction>
                 </div>
             </AlertDialogContent>
@@ -50,7 +51,7 @@ const AlertaDePerigo: React.FC<AlertaDeConfirmacaoProps> = ({ isAberto, onFechar
     );
 
 };
-export default AlertaDePerigo; 
+export default AlertaDePerigo;
 
 
 
