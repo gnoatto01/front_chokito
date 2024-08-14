@@ -43,7 +43,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             }
 
 
-            Router.push('/app/dashboard');
+            Router.push('/app/paginaDashboard');
 
         } catch (error) {
             setIsAuthenticated(false);

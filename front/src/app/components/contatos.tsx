@@ -10,9 +10,10 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import DetalhesContato from "./detalhesContato";
 import AlertaDePerigo, { AlertaDeSucesso } from "./alertas";
 import router from "next/router";
-import { FaPlus, FaSearch, FaTrashAlt, FaEdit, FaDownload, FaPaste, FaFileExcel, FaFilePdf } from 'react-icons/fa';
+import { FaPlus, FaSearch, FaTrashAlt, FaEdit, FaDownload, FaPaste, FaFileExcel, FaFilePdf, FaPowerOff } from 'react-icons/fa';
 import RegistroContato from "./registrarContato";
 import { exportarContatoParaPDF, exportarParaExcel } from "./exports";
+import Layout from "./layoutPrincipal";
 
 interface retornoContato {
     idContato: number;
@@ -96,10 +97,6 @@ export default function Contatos() {
         setSalvarOpcaoDelete(null);
     };
 
-    const handleLogout = () => {
-        destroyCookie(null, 'naturalbit.token');
-        router.push('/login');
-    };
 
     const handleExportarExcel = () => {
         exportarParaExcel(contatos, 'contatos');
@@ -127,100 +124,104 @@ export default function Contatos() {
     };
 
     return (
-        <div className="p-6 sm:p-10 bg-gray-100 min-h-screen">
-            <div className="mb-6">
-                <h1 className="text-4xl font-bold text-gray-800 mb-6">Contatos</h1>
-                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                    <Button
-                        onClick={abrirRegistroContatos}
-                        className="bg-[#2a4564] hover:bg-[#152232] p-3 rounded-full shadow-lg transition-transform transform hover:scale-105 flex items-center gap-2"
-                        size="lg"
-                    >
-                        <FaPlus className="text-white" />
-                        <span>Novo Contato</span>
-                    </Button>
 
-                    <div className="relative w-full max-w-md">
-                        <FaSearch className="absolute top-3 left-3 text-gray-500" />
-                        <Input
-                            type="text"
-                            placeholder="Procure por contatos..."
-                            value={dadosFiltro}
-                            onChange={(e) => setDadosFiltro(e.target.value)}
-                            className="pl-10"
-                        />
+        <Layout>
+            <div className="p-6 sm:p-10 bg-gray-100 min-h-screen">
+                <div className="mb-6">
+                    <h1 className="text-4xl font-bold text-gray-800 mb-6">Contatos</h1>
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                        <Button
+                            onClick={abrirRegistroContatos}
+                            className="bg-[#2C3E50] hover:bg-[#152232] p-3  shadow-lg transition-transform transform hover:scale-105 flex items-center gap-2"
+                            size="lg"
+                        >
+                            <FaPlus className="text-white" />
+                            <span>Novo Contato</span>
+                        </Button>
+
+                        <div className="relative w-full max-w-md">
+                            <FaSearch className="absolute top-3 left-3 text-gray-500" />
+                            <Input
+                                type="text"
+                                placeholder="Procure por contatos..."
+                                value={dadosFiltro}
+                                onChange={(e) => setDadosFiltro(e.target.value)}
+                                className="pl-10"
+                            />
+                        </div>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button
+                                    className="bg-green-600 hover:bg-green-500 flex items-center gap-2 px-4 py-2 rounded-lg shadow-lg transition-transform transform hover:scale-105"
+                                    size="lg"
+                                >
+                                    <FaPaste className="text-white" />
+                                    <span>Ações</span>
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                                <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={handleExportarExcel} className="cursor-pointer flex items-center gap-2 text-green-500">
+                                    <FaFileExcel />
+                                    <span>Exportar Excel</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={handleExportarPDF} className="cursor-pointer flex items-center gap-2 text-red-600">
+                                    <FaFilePdf />
+                                    <span>Exportar PDF</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+
                     </div>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button
-                                className="bg-green-600 hover:bg-green-500 flex items-center gap-2 px-4 py-2 rounded-lg shadow-lg transition-transform transform hover:scale-105"
-                                size="lg"
-                            >
-                                <FaPaste className="text-white" />
-                                <span>Ações</span>
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                            <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={handleExportarExcel} className="cursor-pointer flex items-center gap-2 text-green-500">
-                                <FaFileExcel />
-                                <span>Exportar Excel</span>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={handleExportarPDF} className="cursor-pointer flex items-center gap-2 text-red-600">
-                                <FaFilePdf />
-                                <span>Exportar PDF</span>
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-
                 </div>
-            </div>
-            <div className="grid gap-6">
-                {isSucesso && <AlertaDeSucesso message="Registro excluído com sucesso" />}
-                {filtrarContatos.map((contato) => (
-                    <div key={contato.idContato} className="bg-white rounded-lg shadow-md p-4 hover:bg-gray-50 transition">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                                <Avatar className="h-12 w-12">
-                                    <AvatarFallback>{contato.nomeContato.slice(0, 2).toUpperCase()}</AvatarFallback>
-                                </Avatar>
-                                <div>
-                                    <div className="font-semibold text-lg text-gray-800">{contato.nomeContato}</div>
-                                    <div className="text-gray-600">
-                                        {contato.email} | <a href={`https://wa.me/${contato.whatsapp}?text=Olá...`} target="_blank">{contato.whatsapp}</a>
+                <div className="grid gap-6">
+                    {isSucesso && <AlertaDeSucesso message="Registro excluído com sucesso" />}
+                    {filtrarContatos.map((contato) => (
+                        <div key={contato.idContato} className="bg-white rounded-lg shadow-md p-4 hover:bg-gray-50 transition">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <Avatar className="h-12 w-12">
+                                        <AvatarFallback>{contato.nomeContato.slice(0, 2).toUpperCase()}</AvatarFallback>
+                                    </Avatar>
+                                    <div>
+                                        <div className="font-semibold text-lg text-gray-800">{contato.nomeContato}</div>
+                                        <div className="text-gray-600">
+                                            {contato.email} | <a href={`https://wa.me/${contato.whatsapp}?text=Olá...`} target="_blank">{contato.whatsapp}</a>
+                                        </div>
                                     </div>
                                 </div>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="outline" size="icon" className="h-8 w-8">
+                                            <IconeDetalhes color="#2a4564" className="h-5 w-5" />
+                                            <span className="sr-only">Opções</span>
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                        <DropdownMenuLabel>Opções</DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem onClick={abrirDetalhes(contato)} className="cursor-pointer flex items-center gap-2">
+                                            <FaEdit className="text-blue-500" />
+                                            <span>Editar</span>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => handleAlertaPerigo(contato.idContato)} className="cursor-pointer flex items-center gap-2 text-red-600">
+                                            <FaTrashAlt />
+                                            <span>Excluir</span>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuSeparator />
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
                             </div>
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" size="icon" className="h-8 w-8">
-                                        <IconeDetalhes color="#2a4564" className="h-5 w-5" />
-                                        <span className="sr-only">Opções</span>
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    <DropdownMenuLabel>Opções</DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem onClick={abrirDetalhes(contato)} className="cursor-pointer flex items-center gap-2">
-                                        <FaEdit className="text-blue-500" />
-                                        <span>Editar</span>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => handleAlertaPerigo(contato.idContato)} className="cursor-pointer flex items-center gap-2 text-red-600">
-                                        <FaTrashAlt />
-                                        <span>Excluir</span>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-                                </DropdownMenuContent>
-                            </DropdownMenu>
+                            <RegistroContato isOpen={isRegistroContatoAberto} onClose={fecharRegistroContatos} />
+                            <DetalhesContato abrir={isDetalhesAberto} onFechar={fecharDetalhes} contato={contatoSelecionado} />
                         </div>
-                        <RegistroContato isOpen={isRegistroContatoAberto} onClose={fecharRegistroContatos} />
-                        <DetalhesContato abrir={isDetalhesAberto} onFechar={fecharDetalhes} contato={contatoSelecionado} />
-                    </div>
-                ))}
+                    ))}
+                </div>
+                <AlertaDePerigo isAberto={mostrarAlertaPerigo} onFechar={fecharAlertaPerigo} onConfirmacao={confirmacaoDeDelecao} />
             </div>
-            <AlertaDePerigo isAberto={mostrarAlertaPerigo} onFechar={fecharAlertaPerigo} onConfirmacao={confirmacaoDeDelecao} />
-        </div>
+        </Layout>
+
     );
 }

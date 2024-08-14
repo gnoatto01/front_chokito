@@ -1,14 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { useAuth } from "./app/contexts/authContext";
-import nookies from 'nookies';
 
 
-
-declare module 'jspdf-autotable' {
-    interface jsPDF {
-        autoTable: (options: any) => jsPDF;
-    }
-}
 
 
 export async function middleware(req: NextRequest) {
