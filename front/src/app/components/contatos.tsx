@@ -3,13 +3,12 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { destroyCookie, parseCookies } from "nookies";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { IconeDetalhes } from "./icones";
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import DetalhesContato from "./detalhesContato";
 import AlertaDePerigo, { AlertaDeSucesso } from "./alertas";
-import router from "next/router";
 import { FaPlus, FaSearch, FaTrashAlt, FaEdit, FaDownload, FaPaste, FaFileExcel, FaFilePdf, FaPowerOff } from 'react-icons/fa';
 import RegistroContato from "./registrarContato";
 import { exportarContatoParaPDF, exportarParaExcel } from "./exports";
@@ -25,7 +24,6 @@ interface retornoContato {
     descricaoContato: string;
 }
 
-//TODO: Fazer dar reload na tabela quando excluir ou incluir um novo registro
 
 export default function Contatos() {
 
@@ -38,29 +36,29 @@ export default function Contatos() {
     const [isDetalhesAberto, setIsDetalelhesAberto] = useState(false);
     const [mostrarAlertaPerigo, setMostrarAlertaPerigo] = useState(false);
     const [salvarOpcaoDelete, setSalvarOpcaoDelete] = useState<number | null>(null);
+    const cookies = parseCookies();
+    const accessToken = cookies['naturalbit.token'];
+
+    const fetchData = useCallback(async () => {
+        try {
+            if (accessToken) {
+                const resposta = await axios.get<retornoContato[]>("http://localhost:8080/suportebit/contatos", {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                });
+                setContatos(resposta.data);
+            } else {
+                console.error('No token found in cookies');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }, [accessToken]);
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const cookies = parseCookies();
-                const accessToken = cookies['naturalbit.token'];
-
-                if (accessToken) {
-                    const resposta = await axios.get<retornoContato[]>("http://localhost:8080/suportebit/contatos", {
-                        headers: {
-                            Authorization: `Bearer ${accessToken}`,
-                        },
-                    });
-                    setContatos(resposta.data);
-                } else {
-                    console.error('No token found in cookies');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        };
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     const filtrarContatos = contatos.filter(
         (contato) =>
@@ -85,6 +83,7 @@ export default function Contatos() {
     function fecharDetalhes() {
         setIsDetalelhesAberto(false);
         setContatoSelecionado(null);
+        fetchData();
     }
 
     const handleAlertaPerigo = (salvarId: number) => {
@@ -115,6 +114,7 @@ export default function Contatos() {
                 setTimeout(() => {
                     setIsSucesso(false);
                 }, 2000);
+                fetchData();
             } catch (error) {
                 setMensagemErro('Erro ao excluir o registro. Tente novamente');
             }
