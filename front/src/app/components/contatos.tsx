@@ -60,6 +60,7 @@ export default function Contatos() {
         fetchData();
     }, [fetchData]);
 
+    //Filtrar registros
     const filtrarContatos = contatos.filter(
         (contato) =>
             contato.nomeContato.toLowerCase().includes(dadosFiltro.toLowerCase()) ||
@@ -67,14 +68,17 @@ export default function Contatos() {
     );
 
 
+    //Registro de contatos
     function abrirRegistroContatos() {
         setIsRegistroContatoAberto(true);
     }
 
     function fecharRegistroContatos() {
         setIsRegistroContatoAberto(false);
+        fetchData();
     }
 
+    //Detalhes dos contatos
     const abrirDetalhes = (contato: retornoContato) => (event: React.MouseEvent<HTMLDivElement>) => {
         setIsDetalelhesAberto(true);
         setContatoSelecionado(contato);
@@ -86,6 +90,7 @@ export default function Contatos() {
         fetchData();
     }
 
+    //Alerta de exclusao
     const handleAlertaPerigo = (salvarId: number) => {
         setSalvarOpcaoDelete(salvarId);
         setMostrarAlertaPerigo(true);
@@ -95,15 +100,6 @@ export default function Contatos() {
         setMostrarAlertaPerigo(false);
         setSalvarOpcaoDelete(null);
     };
-
-
-    const handleExportarExcel = () => {
-        exportarParaExcel(contatos, 'contatos');
-    }
-
-    const handleExportarPDF = () => {
-        exportarContatoParaPDF(contatos, 'contatos');
-    }
 
     const confirmacaoDeDelecao = async () => {
         if (salvarOpcaoDelete !== null) {
@@ -123,12 +119,22 @@ export default function Contatos() {
         setSalvarOpcaoDelete(null);
     };
 
+    //Exportar Excel
+    const handleExportarExcel = () => {
+        exportarParaExcel(contatos, 'contatos');
+    }
+
+    //Exportar PDF
+    const handleExportarPDF = () => {
+        exportarContatoParaPDF(contatos, 'relatorio_contatos');
+    }
+
     return (
 
         <Layout>
             <div className="p-6 sm:p-10 bg-gray-100 min-h-screen">
                 <div className="mb-6">
-                    <h1 className="text-4xl font-bold text-gray-800 mb-6">Contatos</h1>
+                    <h1 className="text-4xl font-bold text-black mb-6">Contatos</h1>
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                         <Button
                             onClick={abrirRegistroContatos}
@@ -188,7 +194,7 @@ export default function Contatos() {
                                     <div>
                                         <div className="font-semibold text-lg text-gray-800">{contato.nomeContato}</div>
                                         <div className="text-gray-600">
-                                            {contato.email} | <a href={`https://wa.me/${contato.whatsapp}?text=Olá...`} target="_blank">{contato.whatsapp}</a>
+                                            {contato.email} | <a href={`https://wa.me/${contato.whatsapp}?text=Olá ${contato.nomeContato}...`} target="_blank">{contato.whatsapp}</a>
                                         </div>
                                     </div>
                                 </div>
@@ -214,11 +220,11 @@ export default function Contatos() {
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             </div>
-                            <RegistroContato isOpen={isRegistroContatoAberto} onClose={fecharRegistroContatos} />
-                            <DetalhesContato abrir={isDetalhesAberto} onFechar={fecharDetalhes} contato={contatoSelecionado} />
                         </div>
                     ))}
                 </div>
+                <RegistroContato isOpen={isRegistroContatoAberto} onClose={fecharRegistroContatos} />
+                <DetalhesContato abrir={isDetalhesAberto} onFechar={fecharDetalhes} contato={contatoSelecionado} />
                 <AlertaDePerigo isAberto={mostrarAlertaPerigo} onFechar={fecharAlertaPerigo} onConfirmacao={confirmacaoDeDelecao} />
             </div>
         </Layout>

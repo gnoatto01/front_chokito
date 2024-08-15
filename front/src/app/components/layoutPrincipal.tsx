@@ -41,7 +41,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 {/* Menu Lateral */}
                 <aside className="bg-gray-800 text-gray-300 w-64 flex flex-col">
                     {/* Barra pesquisa */}
-                    <div className="flex items-center bg-[#424242] rounded-md overflow-hidden">
+                    <div className="flex items-center bg-[#333333] rounded-md overflow-hidden">
 
                         <input
                             type="text"
@@ -49,7 +49,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                             className="w-full px-4 py-2 bg-[#333333] text-gray-300 focus:outline-none"
                         />
                         <div className="px-4 py-2 text-gray-300">
-                            <FaSearch />
+                            <FaSearch/>
                         </div>
                     </div>
                     {/* Links do Menu */}

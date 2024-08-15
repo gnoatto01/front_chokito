@@ -26,7 +26,7 @@ export const exportarContatoParaPDF = (data: any[], nomeArquivo: string) => {
     const totalRegistros = data.length;
 
     const documento = new jsPDF();
-    documento.setFont('Segoi-Ui', 'bold');
+    documento.setFont('Helvetica', 'bold');
 
     // Adiciona uma imagem de cabeçalho (logo)
     documento.addImage(logoBase64, 'JPEG', 10, 10, 30, 12); // x, y, largura, altura
@@ -37,7 +37,7 @@ export const exportarContatoParaPDF = (data: any[], nomeArquivo: string) => {
     documento.text('NaturalBit Tecnologia', 45, 12); // Ajuste de posição
 
     // Adiciona um subtítulo ou descrição
-    documento.setFont('Segoi-Ui', 'normal');
+    documento.setFont('Helvetica', 'normal');
     documento.setFontSize(10);
     documento.setTextColor(0, 0, 0);
     documento.text('CNPJ:', 45, 17);
@@ -46,7 +46,7 @@ export const exportarContatoParaPDF = (data: any[], nomeArquivo: string) => {
     documento.setTextColor(100);
     documento.text('29299243000154', 55, 17);
 
-    documento.setFont('Segoi-Ui', 'bold')
+    documento.setFont('Helvetica', 'bold')
     documento.setFontSize(14);
     documento.setTextColor(0, 0, 0);
     documento.text('Relatório de contatos', 14, 37)
@@ -56,18 +56,14 @@ export const exportarContatoParaPDF = (data: any[], nomeArquivo: string) => {
     documento.autoTable({
         startY: 40, // Posição inicial da tabela
         head: [['ID', 'Nome contato', 'E-mail', 'Telefone', 'Whatsapp', 'Descrição']],
-        body: [
-            ...data.map(item => [
-                item.idContato,
-                item.nomeContato,
-                item.email,
-                item.telefone,
-                item.whatsapp,
-                item.descricaoContato
-            ]),
-
-        ],
-
+        body: data.map(item => [
+            item.idContato,
+            item.nomeContato,
+            item.email,
+            item.telefone,
+            item.whatsapp,
+            item.descricaoContato
+        ]),
         headStyles: {
             fillColor: [255, 255, 255], // Cabeçalho sem fundo
             textColor: [0, 0, 0], // Cor do texto preta
@@ -84,13 +80,15 @@ export const exportarContatoParaPDF = (data: any[], nomeArquivo: string) => {
         tableLineWidth: 0.5, // Largura das linhas horizontais
         theme: 'plain', // Remove as bordas da tabela, mantendo apenas as linhas horizontais
         margin: { top: 10 },
-        didDrawPage: () => {
-            const finalY = (documento as any).autoTable.previous.finalY; //posicao final da ultima linha da tabela
-            documento.setFont('Segoe UI', 'bold');
-            documento.setTextColor(0, 0, 0);
-            documento.text(`Total de registros:${totalRegistros}`, 155, finalY + 5);
+        didDrawPage: (data: { cursor: { y: any; }; }) => {
+            const finalY = data.cursor.y; //pega a posicao final vertical 
+            if (totalRegistros > 0) {
+                documento.setFont('Helvetica', 'bold');
+                documento.setFontSize(12);
+                documento.setTextColor(0, 0, 0);
+                documento.text(`Total de registros: ${totalRegistros}`, 155, finalY + 5);
+            }
         }
-        // Adicionar mais itens, conforme for necessario
     });
 
     // Salva o PDF com o nome especificado
