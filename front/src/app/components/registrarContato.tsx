@@ -4,9 +4,9 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { SubmitHandler, useForm } from "react-hook-form";
 import axios from "axios";
-import { useState } from "react";
+import { ClassAttributes, InputHTMLAttributes, JSX, useState } from "react";
 import { AlertaDeSucesso } from "./alertas";
-import ReactInputMask from "react-input-mask";
+import InputMask from 'react-input-mask';
 
 
 interface DadosContato {
@@ -22,21 +22,21 @@ interface DialogProps {
     onClose: () => void;
 }
 
-//TODO: colocar regex para whatsapp 
 
 function RegistroContato({ isOpen, onClose }: DialogProps) {
     const [errorMessage, setErrorMessage] = useState('');
     const [isSuccesso, setIsSuccesso] = useState(false);
     const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<DadosContato>();
+    const [tipoWhatsapp, setTipoWhatsapp] = useState<'Celular' | 'Fixo'>('Celular');
 
     const registroContato: SubmitHandler<DadosContato> = async (dados) => {
-
+        const whatsappSemMascara = dados.whatsapp.replace(/\D/g, '');
         try {
             await axios.post('http://localhost:8080/suportebit/registrar-contato', {
                 nomeContato: dados.nomeContato,
                 email: dados.email,
                 telefone: dados.telefone,
-                whatsapp: dados.whatsapp,
+                whatsapp: whatsappSemMascara,
                 descricaoContato: dados.descricaoContato
             });
 
@@ -56,6 +56,8 @@ function RegistroContato({ isOpen, onClose }: DialogProps) {
     }
 
     if (!isOpen) return null;
+
+    const mask = tipoWhatsapp === 'Celular' ? "(99) 99999-9999" : "(99) 9999-9999"; //verifica se é celular ou fixo e aplica a mascara
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
@@ -100,17 +102,29 @@ function RegistroContato({ isOpen, onClose }: DialogProps) {
                                         />
                                     </div>
                                     <div className="relative">
+                                        <div>
+                                            <label htmlFor="tipoWhatsapp" className="block text-sm font-medium text-gray-700">Tipo Whatsapp</label>
+                                            <select
+                                                id="tipoWhatsapp"
+                                                value={tipoWhatsapp}
+                                                onChange={(e) => setTipoWhatsapp(e.target.value as 'Celular' | 'Fixo')}
+                                                className="block w-full mt-1 border border-gray-300 rounded-md bg-gray-50 text-gray-900"
+                                            >
+                                                <option value="Celular">Celular</option>
+                                                <option value="Fixo">Fixo</option>
+                                            </select>
+                                        </div>
                                         <Label htmlFor="whatsapp">Whatsapp*</Label>
-
-                                        <Input
+                                        <InputMask
                                             id="whatsapp"
-                                            placeholder="Insira o Whatsapp do contato"
-                                            autoComplete="off"
+                                            mask={mask}
                                             {...register('whatsapp', {
-                                                required: true
+                                                required: 'O número de WhatsApp é obrigatório.',
                                             })}
-                                        />
-                                        {errors.whatsapp && <span className="text-[#EA4335]">O Whatsapp do contato é obrigatório.</span>}
+                                        >
+                                        </InputMask>
+
+                                        {errors.whatsapp && <span className="text-[#EA4335]">O Whatsapp do contato é obrigatório, (ex: (XX) XXXXX-XXXX)</span>}
                                     </div>
                                     <div className="relative">
                                         <Label htmlFor="descricaoContato">Descrição</Label>

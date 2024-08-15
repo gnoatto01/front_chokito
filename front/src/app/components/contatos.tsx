@@ -221,6 +221,7 @@ export default function Contatos() {
                                 </DropdownMenu>
                             </div>
                         </div>
+
                     ))}
                 </div>
                 <RegistroContato isOpen={isRegistroContatoAberto} onClose={fecharRegistroContatos} />

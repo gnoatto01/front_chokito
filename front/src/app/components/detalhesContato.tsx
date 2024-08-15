@@ -29,6 +29,9 @@ interface interfaceDetalhes {
     contato: DadosContato | null;
 }
 
+
+//TODO: verificar o porque nao limpa as variaveis quando eu fecho o detalhes de um contato e abro outro 
+
 function DetalhesContato({ abrir, onFechar, contato }: interfaceDetalhes) {
 
     const { register, handleSubmit } = useForm<DadosContato>();
