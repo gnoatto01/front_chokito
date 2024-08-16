@@ -103,12 +103,12 @@ function RegistroContato({ isOpen, onClose }: DialogProps) {
                                     </div>
                                     <div className="relative">
                                         <div>
-                                            <label htmlFor="tipoWhatsapp" className="block text-sm font-medium text-gray-700">Tipo Whatsapp</label>
+                                            <label htmlFor="tipoWhatsapp" className="block text-sm font-mediumt text-muted-foreground">Tipo Whatsapp</label>
                                             <select
                                                 id="tipoWhatsapp"
                                                 value={tipoWhatsapp}
                                                 onChange={(e) => setTipoWhatsapp(e.target.value as 'Celular' | 'Fixo')}
-                                                className="block w-full mt-1 border border-gray-300 rounded-md bg-gray-50 text-gray-900"
+                                                className="block w-full mt-1 border border-gray-300 rounded-md bg-gray-50 text-muted-foreground"
                                             >
                                                 <option value="Celular">Celular</option>
                                                 <option value="Fixo">Fixo</option>

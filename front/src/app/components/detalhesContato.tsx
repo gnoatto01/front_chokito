@@ -10,7 +10,7 @@ import { FaPhone, FaWhatsapp } from 'react-icons/fa';
 import { ArrowLeftIcon, ClockIcon, BookmarkIcon } from "@radix-ui/react-icons";
 import { SubmitHandler, useForm } from "react-hook-form";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AlertaDeSucesso } from "./alertas";
 
 
@@ -30,13 +30,21 @@ interface interfaceDetalhes {
 }
 
 
-//TODO: verificar o porque nao limpa as variaveis quando eu fecho o detalhes de um contato e abro outro 
-
 function DetalhesContato({ abrir, onFechar, contato }: interfaceDetalhes) {
 
-    const { register, handleSubmit } = useForm<DadosContato>();
+    const { register, handleSubmit, reset } = useForm<DadosContato>();
     const [errorMessage, setErrorMessage] = useState('');
+    const [contatoSelecionado, setContatoSelecionado] = useState<DadosContato>();
     const [isSucesso, setIsSuccesso] = useState(false);
+    const whatsappUrl = `https://wa.me/${contato?.whatsapp}?text=Olá ${contato?.nomeContato}...`;
+
+    useEffect(() => {
+        if (contato) {
+            reset(contato); //se tem dados do contato seta os campos com o reset
+        } else {
+            reset(); //se nao tem, reseta todas as variaveis 
+        }
+    }, [contato, reset]);
 
     const editarContato: SubmitHandler<DadosContato> = async (dados) => {
 
@@ -62,8 +70,6 @@ function DetalhesContato({ abrir, onFechar, contato }: interfaceDetalhes) {
     }
 
     if (!contato) return null;
-
-    const whatsappUrl = `https://wa.me/${contato.whatsapp}?text=Olá...`;
 
     return (
         <Dialog open={abrir} onOpenChange={onFechar}>
@@ -93,17 +99,17 @@ function DetalhesContato({ abrir, onFechar, contato }: interfaceDetalhes) {
                                     <div className="grid grid-cols-2 gap-4 text-muted-foreground">
                                         <div>
                                             <Label htmlFor="name">Nome</Label>
-                                            <Input id="name" defaultValue={contato.nomeContato}
+                                            <Input id="name"
                                                 {...register('nomeContato', { required: true })} />
                                             <Label htmlFor="email">Email</Label>
-                                            <Input id="email" type="email" defaultValue={contato.email}
+                                            <Input id="email" type="email"
                                                 {...register('email', { required: false })} />
                                         </div>
                                         <div>
                                             <div className="flex items-center">
                                                 <Label htmlFor="phone" className="flex-1">Telefone</Label>
                                             </div>
-                                            <Input id="phone" type="tel" defaultValue={contato.telefone}
+                                            <Input id="phone" type="tel"
                                                 {...register('telefone', { required: false })} />
                                             <div className="flex items-center mt-4">
                                                 <Label htmlFor="whatsapp" className="flex-1">Whatsapp</Label>
@@ -111,7 +117,7 @@ function DetalhesContato({ abrir, onFechar, contato }: interfaceDetalhes) {
                                                     <FaWhatsapp size={24} className="text-lg ml-2 mb-2" />
                                                 </a>
                                             </div>
-                                            <Input id="whatsapp" type="text" defaultValue={contato.whatsapp}
+                                            <Input id="whatsapp" type="text"
                                                 {...register('whatsapp', { required: true })} />
                                         </div>
                                     </div>
@@ -122,7 +128,7 @@ function DetalhesContato({ abrir, onFechar, contato }: interfaceDetalhes) {
                                     <div className="grid w-full gap- text-muted-foreground">
                                         <div>
                                             <Label htmlFor="obs">Observações</Label>
-                                            <Textarea id="obs" rows={5} defaultValue={contato.descricaoContato}
+                                            <Textarea id="obs" rows={5}
                                                 {...register('descricaoContato', { required: false })} />
                                         </div>
                                     </div>

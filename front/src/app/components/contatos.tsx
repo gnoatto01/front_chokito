@@ -13,6 +13,7 @@ import { FaPlus, FaSearch, FaTrashAlt, FaEdit, FaDownload, FaPaste, FaFileExcel,
 import RegistroContato from "./registrarContato";
 import { exportarContatoParaPDF, exportarParaExcel } from "./exports";
 import Layout from "./layoutPrincipal";
+import { useForm } from "react-hook-form";
 
 interface retornoContato {
     idContato: number;
@@ -36,6 +37,7 @@ export default function Contatos() {
     const [isDetalhesAberto, setIsDetalelhesAberto] = useState(false);
     const [mostrarAlertaPerigo, setMostrarAlertaPerigo] = useState(false);
     const [salvarOpcaoDelete, setSalvarOpcaoDelete] = useState<number | null>(null);
+
     const cookies = parseCookies();
     const accessToken = cookies['naturalbit.token'];
 
@@ -80,8 +82,14 @@ export default function Contatos() {
 
     //Detalhes dos contatos
     const abrirDetalhes = (contato: retornoContato) => (event: React.MouseEvent<HTMLDivElement>) => {
-        setIsDetalelhesAberto(true);
-        setContatoSelecionado(contato);
+        console.log(contato);
+        if (contato && contato.idContato) {
+            setIsDetalelhesAberto(true);
+            setContatoSelecionado(contato);
+        } else {
+            console.error('Contato inválido', contato);
+        }
+
     };
 
     function fecharDetalhes() {
@@ -220,12 +228,12 @@ export default function Contatos() {
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             </div>
+                            <DetalhesContato abrir={isDetalhesAberto} onFechar={fecharDetalhes} contato={contatoSelecionado} />
                         </div>
 
                     ))}
                 </div>
                 <RegistroContato isOpen={isRegistroContatoAberto} onClose={fecharRegistroContatos} />
-                <DetalhesContato abrir={isDetalhesAberto} onFechar={fecharDetalhes} contato={contatoSelecionado} />
                 <AlertaDePerigo isAberto={mostrarAlertaPerigo} onFechar={fecharAlertaPerigo} onConfirmacao={confirmacaoDeDelecao} />
             </div>
         </Layout>
