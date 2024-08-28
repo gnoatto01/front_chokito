@@ -1,7 +1,5 @@
 import Layout from "./layoutPrincipal";
 
-
-
 export default function TelaDashboard() {
     return (
         <Layout>
@@ -13,7 +11,6 @@ export default function TelaDashboard() {
                     </p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    
                 </div>
             </div>
         </Layout>

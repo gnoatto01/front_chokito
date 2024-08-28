@@ -25,6 +25,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
 
+    //TODO: colocar httponly, e secure na hora de colocar em producao
     async function signIn({ usuario, senhaUsuario }: dadosFormulario) {
         try {
             const response = await axios.post('http://localhost:8080/suportebit/login', { usuario, senhaUsuario });

@@ -9,65 +9,93 @@ import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import DetalhesContato from "./detalhesContato";
 import AlertaDePerigo, { AlertaDeSucesso } from "./alertas";
-import { FaPlus, FaSearch, FaTrashAlt, FaEdit, FaDownload, FaPaste, FaFileExcel, FaFilePdf, FaPowerOff } from 'react-icons/fa';
+import { FaPlus, FaSearch, FaTrashAlt, FaEdit, FaDownload, FaPaste, FaFileExcel, FaFilePdf, FaDatabase } from 'react-icons/fa';
 import RegistroContato from "./registrarContato";
 import { exportarContatoParaPDF, exportarParaExcel } from "./exports";
 import Layout from "./layoutPrincipal";
 import { useForm } from "react-hook-form";
+import Paginacao from "./paginacao";
+import { buscarPaginado, excluirRegistro } from "@/utils/axiosService";
 
-interface retornoContato {
+
+interface Usuario {
+    idUsuario: number;
+    usuario: string;
+    emailUsario: string;
+}
+
+interface Contato {
     idContato: number;
     email: string;
+    usuario: Usuario;
     nomeContato: string;
     telefone: string;
     whatsapp: string;
-    idUsuario: number;
     descricaoContato: string;
 }
 
 
+//TODO:Adicionar busca por nome na busca paginada
+//TODO: criar um util para abrir e fechar dialogs
+
 export default function Contatos() {
 
-    const [contatos, setContatos] = useState<retornoContato[]>([]);
+    const [contatos, setContatos] = useState<Contato[]>([]);
     const [dadosFiltro, setDadosFiltro] = useState("");
     const [mensagemErro, setMensagemErro] = useState("");
     const [isSucesso, setIsSucesso] = useState(false);
-    const [contatoSelecionado, setContatoSelecionado] = useState<retornoContato | null>(null);
+    const [contatoSelecionado, setContatoSelecionado] = useState<Contato | null>(null);
     const [isRegistroContatoAberto, setIsRegistroContatoAberto] = useState(false);
     const [isDetalhesAberto, setIsDetalelhesAberto] = useState(false);
     const [mostrarAlertaPerigo, setMostrarAlertaPerigo] = useState(false);
-    const [salvarOpcaoDelete, setSalvarOpcaoDelete] = useState<number | null>(null);
+    const [salvarIdOpcaoDelete, setSalvarIdOpcaoDelete] = useState<number | null>(null);
 
-    const cookies = parseCookies();
-    const accessToken = cookies['naturalbit.token'];
 
-    const fetchData = useCallback(async () => {
-        try {
-            if (accessToken) {
-                const resposta = await axios.get<retornoContato[]>("http://localhost:8080/suportebit/contatos", {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                    },
-                });
-                setContatos(resposta.data);
-            } else {
-                console.error('No token found in cookies');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    }, [accessToken]);
-
-    useEffect(() => {
-        fetchData();
-    }, [fetchData]);
-
+    //-------------------------------------------s--------------
     //Filtrar registros
     const filtrarContatos = contatos.filter(
         (contato) =>
             contato.nomeContato.toLowerCase().includes(dadosFiltro.toLowerCase()) ||
             contato.whatsapp.includes(dadosFiltro),
     );
+
+    //---------------------------------------------------------
+
+    //Paginacao 
+    const [paginaAtual, setPaginaAtual] = useState(1);
+    const [contatosPorPagina] = useState(5);
+    const [totalDePaginas, setTotalDePaginas] = useState(0);
+
+
+    const handleMudancaPagina = (pagina: number) => {
+        setPaginaAtual(pagina);
+    };
+
+    //---------------------------------------------------------
+
+    const fetchData = useCallback(async () => {
+        try {
+
+            const resposta = await buscarPaginado<Contato>(paginaAtual - 1, 5, "contatos/buscaPaginada");
+
+            if (resposta && Array.isArray(resposta.content)) {
+                setContatos(resposta.content);
+                setTotalDePaginas(resposta.totalPages);
+
+            } else {
+                console.error('Resposta da API inválida', resposta);
+                setContatos([]);
+            }
+
+        } catch (error) {
+            console.error('Erro ao buscar dados:', error);
+            setContatos([]);
+        }
+    }, [paginaAtual, contatosPorPagina]);
+
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
 
 
     //Registro de contatos
@@ -80,8 +108,10 @@ export default function Contatos() {
         fetchData();
     }
 
+    //---------------------------------------------------------
+
     //Detalhes dos contatos
-    const abrirDetalhes = (contato: retornoContato) => (event: React.MouseEvent<HTMLDivElement>) => {
+    const abrirDetalhes = (contato: Contato) => (event: React.MouseEvent<HTMLDivElement>) => {
         console.log(contato);
         if (contato && contato.idContato) {
             setIsDetalelhesAberto(true);
@@ -97,22 +127,23 @@ export default function Contatos() {
         setContatoSelecionado(null);
         fetchData();
     }
+    //---------------------------------------------------------
 
     //Alerta de exclusao
     const handleAlertaPerigo = (salvarId: number) => {
-        setSalvarOpcaoDelete(salvarId);
+        setSalvarIdOpcaoDelete(salvarId);
         setMostrarAlertaPerigo(true);
     };
 
     const fecharAlertaPerigo = () => {
         setMostrarAlertaPerigo(false);
-        setSalvarOpcaoDelete(null);
+        setSalvarIdOpcaoDelete(null);
     };
 
     const confirmacaoDeDelecao = async () => {
-        if (salvarOpcaoDelete !== null) {
+        if (salvarIdOpcaoDelete !== null) {
             try {
-                await axios.delete(`http://localhost:8080/suportebit/deletar-contato/${salvarOpcaoDelete}`);
+                await excluirRegistro('deletarContato', `${salvarIdOpcaoDelete}`)
                 setMensagemErro('');
                 setIsSucesso(true);
                 setTimeout(() => {
@@ -124,18 +155,21 @@ export default function Contatos() {
             }
         }
         setMostrarAlertaPerigo(false);
-        setSalvarOpcaoDelete(null);
+        setSalvarIdOpcaoDelete(null);
     };
+    //---------------------------------------------------------
 
     //Exportar Excel
     const handleExportarExcel = () => {
         exportarParaExcel(contatos, 'contatos');
     }
+    //---------------------------------------------------------
 
     //Exportar PDF
     const handleExportarPDF = () => {
         exportarContatoParaPDF(contatos, 'relatorio_contatos');
     }
+    //---------------------------------------------------------
 
     return (
 
@@ -232,6 +266,14 @@ export default function Contatos() {
                         </div>
 
                     ))}
+                </div>
+                {/* Paginação */}
+                <div className="flex justify-center mt-4">
+                    <Paginacao
+                        paginaAtual={paginaAtual}
+                        totalDePaginas={totalDePaginas}
+                        onMudancaPagina={handleMudancaPagina}
+                    />
                 </div>
                 <RegistroContato isOpen={isRegistroContatoAberto} onClose={fecharRegistroContatos} />
                 <AlertaDePerigo isAberto={mostrarAlertaPerigo} onFechar={fecharAlertaPerigo} onConfirmacao={confirmacaoDeDelecao} />

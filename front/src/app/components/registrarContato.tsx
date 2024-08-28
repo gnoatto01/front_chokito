@@ -7,6 +7,7 @@ import axios from "axios";
 import { ClassAttributes, InputHTMLAttributes, JSX, useState } from "react";
 import { AlertaDeSucesso } from "./alertas";
 import InputMask from 'react-input-mask';
+import { criarRegistro } from "@/utils/axiosService";
 
 
 interface DadosContato {
@@ -32,13 +33,8 @@ function RegistroContato({ isOpen, onClose }: DialogProps) {
     const registroContato: SubmitHandler<DadosContato> = async (dados) => {
         const whatsappSemMascara = dados.whatsapp.replace(/\D/g, '');
         try {
-            await axios.post('http://localhost:8080/suportebit/registrar-contato', {
-                nomeContato: dados.nomeContato,
-                email: dados.email,
-                telefone: dados.telefone,
-                whatsapp: whatsappSemMascara,
-                descricaoContato: dados.descricaoContato
-            });
+
+            await criarRegistro<DadosContato>({ data: dados }, 'registrarContato');
 
             setErrorMessage('');
             setIsSuccesso(true);

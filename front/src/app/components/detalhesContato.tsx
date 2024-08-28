@@ -12,6 +12,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { AlertaDeSucesso } from "./alertas";
+import { editarRegistro } from "@/utils/axiosService";
 
 
 
@@ -49,14 +50,7 @@ function DetalhesContato({ abrir, onFechar, contato }: interfaceDetalhes) {
     const editarContato: SubmitHandler<DadosContato> = async (dados) => {
 
         try {
-            await axios.put(`http://localhost:8080/suportebit/editar-contato/${contato?.idContato}`, {
-                nomeContato: dados.nomeContato,
-                email: dados.email,
-                telefone: dados.telefone,
-                whatsapp: dados.whatsapp,
-                descricaoContato: dados.descricaoContato
-            });
-
+            await editarRegistro<DadosContato>({ data: dados }, 'editarContato', dados.idContato);
             setErrorMessage('');
             setIsSuccesso(true);
             setTimeout(() => {

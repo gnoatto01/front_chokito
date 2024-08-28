@@ -1,7 +1,7 @@
 import Link from "next/link";
 import router, { useRouter } from "next/router";
 import { destroyCookie } from "nookies";
-import { FaClipboard, FaMailBulk, FaPowerOff, FaUser, FaSearch } from "react-icons/fa";
+import { FaClipboard, FaMailBulk, FaPowerOff, FaUser, FaSearch, FaPaperclip, FaShieldAlt } from "react-icons/fa";
 import React, { ReactNode } from 'react';
 
 interface LayoutProps {
@@ -49,7 +49,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                             className="w-full px-4 py-2 bg-[#333333] text-gray-300 focus:outline-none"
                         />
                         <div className="px-4 py-2 text-gray-300">
-                            <FaSearch/>
+                            <FaSearch />
                         </div>
                     </div>
                     {/* Links do Menu */}
@@ -57,6 +57,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         <Link href="/app/paginaContatos" className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-700">
                             <FaUser className="w-5 h-5" />
                             <span>Contatos</span>
+                        </Link>
+                        <Link href="/app/paginaGerarContraSenha" className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-700">
+                            <FaShieldAlt className="w-5 h-5" />
+                            <span>Contra-senha</span>
                         </Link>
                         <Link href="#" className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-700">
                             <FaMailBulk className="w-5 h-5" />
