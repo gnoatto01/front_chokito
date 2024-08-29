@@ -1,7 +1,7 @@
 import Link from "next/link";
 import router, { useRouter } from "next/router";
 import { destroyCookie } from "nookies";
-import { FaClipboard, FaMailBulk, FaPowerOff, FaUser, FaSearch, FaPaperclip, FaShieldAlt } from "react-icons/fa";
+import { FaClipboard, FaMailBulk, FaPowerOff, FaUser, FaSearch, FaPaperclip, FaShieldAlt, FaUserClock } from "react-icons/fa";
 import React, { ReactNode } from 'react';
 
 interface LayoutProps {
@@ -57,6 +57,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         <Link href="/app/paginaContatos" className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-700">
                             <FaUser className="w-5 h-5" />
                             <span>Contatos</span>
+                        </Link>
+                        <Link href="/app/paginaAtendimentos" className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-700">
+                            <FaUserClock className="w-5 h-5" />
+                            <span>Atendimentos</span>
                         </Link>
                         <Link href="/app/paginaGerarContraSenha" className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-700">
                             <FaShieldAlt className="w-5 h-5" />

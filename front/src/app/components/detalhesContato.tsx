@@ -11,10 +11,8 @@ import { ArrowLeftIcon, ClockIcon, BookmarkIcon } from "@radix-ui/react-icons";
 import { SubmitHandler, useForm } from "react-hook-form";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { AlertaDeSucesso } from "./alertas";
+import { AlertaDeSucesso } from "../../utils/alertas";
 import { editarRegistro } from "@/utils/axiosService";
-
-
 
 interface DadosContato {
     idContato: number;
@@ -24,28 +22,22 @@ interface DadosContato {
     whatsapp: string;
     descricaoContato: string;
 }
-interface interfaceDetalhes {
-    abrir: boolean;
-    onFechar: () => void;
-    contato: DadosContato | null;
-}
 
-
-function DetalhesContato({ abrir, onFechar, contato }: interfaceDetalhes) {
+function DetalhesContato({ abrir, onFechar, dados }: PropriedadesDialogEdicao<DadosContato>) {
 
     const { register, handleSubmit, reset } = useForm<DadosContato>();
     const [errorMessage, setErrorMessage] = useState('');
     const [contatoSelecionado, setContatoSelecionado] = useState<DadosContato>();
     const [isSucesso, setIsSuccesso] = useState(false);
-    const whatsappUrl = `https://wa.me/${contato?.whatsapp}?text=Olá ${contato?.nomeContato}...`;
+    const whatsappUrl = `https://wa.me/${dados?.whatsapp}?text=Olá ${dados?.nomeContato}...`;
 
     useEffect(() => {
-        if (contato) {
-            reset(contato); //se tem dados do contato seta os campos com o reset
+        if (dados) {
+            reset(dados); //se tem dados do contato seta os campos com o reset
         } else {
             reset(); //se nao tem, reseta todas as variaveis 
         }
-    }, [contato, reset]);
+    }, [dados, reset]);
 
     const editarContato: SubmitHandler<DadosContato> = async (dados) => {
 
@@ -63,7 +55,7 @@ function DetalhesContato({ abrir, onFechar, contato }: interfaceDetalhes) {
         }
     }
 
-    if (!contato) return null;
+    if (!dados) return null;
 
     return (
         <Dialog open={abrir} onOpenChange={onFechar}>
@@ -76,10 +68,10 @@ function DetalhesContato({ abrir, onFechar, contato }: interfaceDetalhes) {
                         <div className="bg-muted p-6 h-full">
                             <div className="flex items-center gap-4 h-full">
                                 <Avatar className="h-16 w-16">
-                                    <AvatarFallback>{contato.nomeContato.slice(0, 2).toUpperCase()}</AvatarFallback>
+                                    <AvatarFallback>{dados.nomeContato.slice(0, 2).toUpperCase()}</AvatarFallback>
                                 </Avatar>
                                 <div className="overflow-hidden">
-                                    <h2 className="text-lg font-semibold">{contato.nomeContato}</h2>
+                                    <h2 className="text-lg font-semibold">{dados.nomeContato}</h2>
                                 </div>
                             </div>
                         </div>

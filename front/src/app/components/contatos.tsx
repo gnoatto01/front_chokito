@@ -4,17 +4,17 @@ import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { destroyCookie, parseCookies } from "nookies";
 import { useCallback, useEffect, useState } from "react";
-import { IconeDetalhes } from "./icones";
+import { IconeDetalhes } from "../../utils/icones";
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import DetalhesContato from "./detalhesContato";
-import AlertaDePerigo, { AlertaDeSucesso } from "./alertas";
+import AlertaDePerigo, { AlertaDeSucesso } from "../../utils/alertas";
 import { FaPlus, FaSearch, FaTrashAlt, FaEdit, FaDownload, FaPaste, FaFileExcel, FaFilePdf, FaDatabase } from 'react-icons/fa';
 import RegistroContato from "./registrarContato";
-import { exportarContatoParaPDF, exportarParaExcel } from "./exports";
+import { exportarContatoParaPDF, exportarParaExcel } from "../../utils/exports";
 import Layout from "./layoutPrincipal";
 import { useForm } from "react-hook-form";
-import Paginacao from "./paginacao";
+import Paginacao from "../../utils/paginacao";
 import { buscarPaginado, excluirRegistro } from "@/utils/axiosService";
 
 
@@ -262,7 +262,7 @@ export default function Contatos() {
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             </div>
-                            <DetalhesContato abrir={isDetalhesAberto} onFechar={fecharDetalhes} contato={contatoSelecionado} />
+                            <DetalhesContato abrir={isDetalhesAberto} onFechar={fecharDetalhes} dados={contatoSelecionado} />
                         </div>
 
                     ))}

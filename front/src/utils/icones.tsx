@@ -80,7 +80,7 @@ function ClockIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
             <polyline points="12 6 12 12 16 14" />
         </svg>
     )
-}
+} 
 
 
 function FilePenIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {

@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { SubmitHandler, useForm } from "react-hook-form";
 import axios from "axios";
 import { ClassAttributes, InputHTMLAttributes, JSX, useState } from "react";
-import { AlertaDeSucesso } from "./alertas";
+import { AlertaDeSucesso } from "../../utils/alertas";
 import InputMask from 'react-input-mask';
 import { criarRegistro } from "@/utils/axiosService";
 
