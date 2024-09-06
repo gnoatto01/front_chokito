@@ -5,19 +5,33 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import Layout from "./layoutPrincipal"
 import { IconeDetalhes } from "../../utils/icones"
 import { FaEdit, FaPlus, FaTrashAlt } from "react-icons/fa"
+import { useState } from "react"
+import RegistroAtividade from "./registrarAtividades"
 
-function Atendimentos() {
+function Atividades() {
+
+    const [isRegistroAtividadesAberto, setIsRegistroAtividadesAberto] = useState(false);
+
+    function abrirRegistroAtividades() {
+        setIsRegistroAtividadesAberto(true);
+    }
+
+    function fecharRegistroAtividades() {
+        setIsRegistroAtividadesAberto(false);
+    }
+
     return (
         <Layout>
             <div className="p-6 sm:p-10 bg-gray-100 min-h-screen">
                 <div className="mb-6">
-                    <h1 className="text-4xl font-bold text-black mb-6">Atendimentos</h1>
+                    <h1 className="text-4xl font-bold text-black mb-6">Atividades</h1>
                     <Button
+                        onClick={abrirRegistroAtividades}
                         className="bg-[#2C3E50] hover:bg-[#152232] p-3  shadow-lg transition-transform transform hover:scale-105 flex items-center gap-2 mb-4"
                         size="lg"
                     >
                         <FaPlus className="text-white" />
-                        <span>Novo atendimento</span>
+                        <span>Cadastrar</span>
                     </Button>
                     <Table>
                         <TableHeader>
@@ -92,11 +106,12 @@ function Atendimentos() {
                         </TableBody>
                     </Table>
                 </div>
+                <RegistroAtividade abrir={isRegistroAtividadesAberto} onFechar={fecharRegistroAtividades} />
             </div>
         </Layout>
 
     )
 }
 
-export default Atendimentos;
+export default Atividades;
 

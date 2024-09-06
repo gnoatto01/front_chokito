@@ -184,7 +184,7 @@ export default function Contatos() {
                             size="lg"
                         >
                             <FaPlus className="text-white" />
-                            <span>Novo Contato</span>
+                            <span>Cadastrar</span>
                         </Button>
 
                         <div className="relative w-full max-w-md">
@@ -275,7 +275,7 @@ export default function Contatos() {
                         onMudancaPagina={handleMudancaPagina}
                     />
                 </div>
-                <RegistroContato isOpen={isRegistroContatoAberto} onClose={fecharRegistroContatos} />
+                <RegistroContato abrir={isRegistroContatoAberto} onFechar={fecharRegistroContatos} />
                 <AlertaDePerigo isAberto={mostrarAlertaPerigo} onFechar={fecharAlertaPerigo} onConfirmacao={confirmacaoDeDelecao} />
             </div>
         </Layout>

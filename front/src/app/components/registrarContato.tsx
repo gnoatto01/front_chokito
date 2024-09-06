@@ -18,13 +18,10 @@ interface DadosContato {
     descricaoContato: string;
 }
 
-interface DialogProps {
-    isOpen: boolean;
-    onClose: () => void;
-}
 
 
-function RegistroContato({ isOpen, onClose }: DialogProps) {
+
+function RegistroContato({ abrir, onFechar }: PropriedadesDialog) {
     const [errorMessage, setErrorMessage] = useState('');
     const [isSuccesso, setIsSuccesso] = useState(false);
     const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<DadosContato>();
@@ -40,7 +37,7 @@ function RegistroContato({ isOpen, onClose }: DialogProps) {
             setIsSuccesso(true);
             setTimeout(() => {
                 setIsSuccesso(false);
-                onClose();
+                onFechar();
             }, 2000);
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.status === 409) {
@@ -51,12 +48,12 @@ function RegistroContato({ isOpen, onClose }: DialogProps) {
         }
     }
 
-    if (!isOpen) return null;
+    if (!abrir) return null;
 
     const mask = tipoWhatsapp === 'Celular' ? "(99) 99999-9999" : "(99) 9999-9999"; //verifica se é celular ou fixo e aplica a mascara
 
     return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
+        <Dialog open={abrir} onOpenChange={onFechar}>
             <DialogContent className="max-w-[800px] w-full">
                 <DialogTitle>Cadastro de novos contatos</DialogTitle>
                 <DialogDescription>Realize seu cadastro</DialogDescription>
@@ -136,7 +133,7 @@ function RegistroContato({ isOpen, onClose }: DialogProps) {
                                             <Button
                                                 type="button"
                                                 className="bg-[#EA4335] hover:bg-[#75221B] text-white"
-                                                onClick={onClose}
+                                                onClick={onFechar}
                                             >
                                                 Cancelar
                                             </Button>

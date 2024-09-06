@@ -1,7 +1,7 @@
 import Link from "next/link";
 import router, { useRouter } from "next/router";
 import { destroyCookie } from "nookies";
-import { FaClipboard, FaMailBulk, FaPowerOff, FaUser, FaSearch, FaPaperclip, FaShieldAlt, FaUserClock } from "react-icons/fa";
+import { FaClipboard, FaMailBulk, FaPowerOff, FaUser, FaSearch, FaShieldAlt, FaUserClock, FaFilePdf } from "react-icons/fa";
 import React, { ReactNode } from 'react';
 
 interface LayoutProps {
@@ -58,9 +58,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                             <FaUser className="w-5 h-5" />
                             <span>Contatos</span>
                         </Link>
-                        <Link href="/app/paginaAtendimentos" className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-700">
+                        <Link href="/app/paginaAtividades" className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-700">
                             <FaUserClock className="w-5 h-5" />
-                            <span>Atendimentos</span>
+                            <span>Atividades</span>
                         </Link>
                         <Link href="/app/paginaGerarContraSenha" className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-700">
                             <FaShieldAlt className="w-5 h-5" />
@@ -73,6 +73,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         <Link href="#" className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-700">
                             <FaClipboard className="w-5 h-5" />
                             <span>Roteiros</span>
+                        </Link>
+                        <Link href="#" className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-700">
+                            <FaFilePdf className="w-5 h-5" />
+                            <span>Relatórios</span>
                         </Link>
                     </nav>
                 </aside>

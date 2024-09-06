@@ -8,7 +8,7 @@ import { buscarTodos } from '@/utils/axiosService';
 
 
 function BuscarContraSenha() {
-    const [contraSenha, setContraSenha] = useState<string>('');
+    const [contraSenha, setContraSenha] = useState<string>("");
     const [isSucesso, setIsSucesso] = useState(false);
 
     const buscarSenha = useCallback(async () => {
