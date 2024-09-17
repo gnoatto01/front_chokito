@@ -29,6 +29,8 @@ interface DadosAtividade {
     pendencia: string;
 }
 
+//TODO: colocar opcao de filtrar digitando o usuario resposanvel e solicitante
+
 function RegistroAtividade({ abrir, onFechar }: PropriedadesDialog) {
     const [errorMessage, setErrorMessage] = useState('');
     const [isSucesso, setIsSucesso] = useState(false);

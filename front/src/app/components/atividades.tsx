@@ -5,12 +5,59 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import Layout from "./layoutPrincipal"
 import { IconeDetalhes } from "../../utils/icones"
 import { FaEdit, FaPlus, FaTrashAlt } from "react-icons/fa"
-import { useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import RegistroAtividade from "./registrarAtividades"
+import { buscarTodos } from "@/utils/axiosService"
+import DateTableCell from "@/utils/colunaDataFormatada"
+
+interface PropriedadesUsuario {
+    idUsuario: number;
+    usuario: string;
+    nomeCompleto: string;
+    emailUsuario: string;
+}
+
+interface PropriedadesAtividades {
+    idAtividade: number;
+    nomeAtividade: string;
+    usuarioResponsavel: PropriedadesUsuario;
+    usuaruioSolicitante: PropriedadesUsuario;
+    dataInicioAtividade: string;
+    problemaRelatado: string;
+    solucaoAplicada: string;
+    pendencia: string;
+    statusAtividade: string;
+}
+
+//TODO: arrumar a celula da tabela de usuario solicitante e responsavel
+//TODO: formatar as datas para dd/MM/aa HH:mm
 
 function Atividades() {
 
     const [isRegistroAtividadesAberto, setIsRegistroAtividadesAberto] = useState(false);
+    const [atividades, setAtividades] = useState<PropriedadesAtividades[]>([]);
+
+    const buscarDados = useCallback(async () => {
+        try {
+
+            const resposta = await buscarTodos<PropriedadesAtividades[]>('atividades',);
+
+            if (resposta) {
+                setAtividades(resposta);
+
+            } else {
+                console.error('Resposta da API inválida', resposta);
+            }
+
+        } catch (error) {
+            console.error('Erro ao buscar dados:', error);
+        }
+    }, []);
+
+    useEffect(() => {
+        buscarDados();
+    }, [buscarDados]);
+
 
     function abrirRegistroAtividades() {
         setIsRegistroAtividadesAberto(true);
@@ -18,6 +65,7 @@ function Atividades() {
 
     function fecharRegistroAtividades() {
         setIsRegistroAtividadesAberto(false);
+        buscarDados();
     }
 
     return (
@@ -36,73 +84,30 @@ function Atividades() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Nome da Tarefa</TableHead>
+                                <TableHead>Nome da atividade</TableHead>
                                 <TableHead>Responsável</TableHead>
-                                <TableHead>Data de Início</TableHead>
+                                <TableHead>Data de início</TableHead>
                                 <TableHead>Solicitante</TableHead>
-                                <TableHead>Problema Relatado</TableHead>
-                                <TableHead>Solução Aplicada</TableHead>
+                                <TableHead>Problema relatado</TableHead>
+                                <TableHead>Solução aplicada</TableHead>
                                 <TableHead>Pendência</TableHead>
                                 <TableHead>Status</TableHead>
-                                <TableHead>Ações</TableHead>
+                                <TableHead>Detalhes</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            <TableRow>
-                                <TableCell>Atualizar sistema</TableCell>
-                                <TableCell>John Doe</TableCell>
-                                <TableCell>2023-05-01</TableCell>
-                                <TableCell>Jane Smith</TableCell>
-                                <TableCell>Sistema está desatualizado</TableCell>
-                                <TableCell>Atualizei o sistema para a versão mais recente</TableCell>
-                                <TableCell>Nenhuma</TableCell>
-                                <TableCell>Aberto</TableCell>
-                                <TableCell>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="outline" size="icon" className="h-8 w-8">
-                                                <IconeDetalhes color="#2a4564" className="h-5 w-5" />
-                                                <span className="sr-only">Opções</span>
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuLabel>Opções</DropdownMenuLabel>
-                                            <DropdownMenuSeparator />
-                                            <DropdownMenuItem className="cursor-pointer flex items-center gap-2">
-                                                <FaEdit className="text-blue-500" />
-                                                <span>Editar</span>
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem className="cursor-pointer flex items-center gap-2 text-red-600">
-                                                <FaTrashAlt />
-                                                <span>Excluir</span>
-                                            </DropdownMenuItem>
-                                            <DropdownMenuSeparator />
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableCell>Resolver problema no banco de dados</TableCell>
-                                <TableCell>Bob Johnson</TableCell>
-                                <TableCell>2023-04-15</TableCell>
-                                <TableCell>John Doe</TableCell>
-                                <TableCell>Banco de dados está lento</TableCell>
-                                <TableCell>Otimizei as consultas e aumentei a memória do servidor</TableCell>
-                                <TableCell>Nenhuma</TableCell>
-                                <TableCell>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="outline" size="icon">
-                                                <IconeDetalhes className="h-4 w-4" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuItem>Editar</DropdownMenuItem>
-                                            <DropdownMenuItem className="text-destructive">Excluir</DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </TableCell>
-                            </TableRow>
+                            {atividades.map((atividade) => (
+                                <TableRow key={atividade.idAtividade}>
+                                    <TableCell>{atividade.nomeAtividade}</TableCell>
+                                    <TableCell>{}</TableCell>
+                                    <TableCell>{atividade.dataInicioAtividade}</TableCell>
+                                    <TableCell>{}</TableCell>
+                                    <TableCell>{atividade.problemaRelatado}</TableCell>
+                                    <TableCell>{atividade.solucaoAplicada}</TableCell>
+                                    <TableCell>{atividade.pendencia}</TableCell>
+                                    <TableCell>{atividade.statusAtividade}</TableCell>
+                                </TableRow>
+                            ))}
                         </TableBody>
                     </Table>
                 </div>

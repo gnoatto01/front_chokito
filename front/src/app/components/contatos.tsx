@@ -91,7 +91,7 @@ export default function Contatos() {
             console.error('Erro ao buscar dados:', error);
             setContatos([]);
         }
-    }, [paginaAtual, contatosPorPagina]);
+    }, [paginaAtual]);
 
     useEffect(() => {
         fetchData();
