@@ -31,7 +31,6 @@ export const buscarTodos = async<T>(linkRequisicao: string): Promise<T> => {
                 Authorization: `Bearer ${accessToken}`,
             },
         });
-        console.log(resposta);
         return resposta.data;
 
     } catch (error) {

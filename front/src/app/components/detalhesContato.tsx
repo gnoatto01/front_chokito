@@ -14,20 +14,12 @@ import { useEffect, useState } from "react";
 import { AlertaDeSucesso } from "../../utils/alertas";
 import { editarRegistro } from "@/utils/axiosService";
 
-interface DadosContato {
-    idContato: number;
-    nomeContato: string;
-    email: string;
-    telefone: string;
-    whatsapp: string;
-    descricaoContato: string;
-}
 
-function DetalhesContato({ abrir, onFechar, dados }: PropriedadesDialogEdicao<DadosContato>) {
+function DetalhesContato({ abrir, onFechar, dados }: PropriedadesDialogEdicao<Contato.EntidadeContato>) {
 
-    const { register, handleSubmit, reset } = useForm<DadosContato>();
+    const { register, handleSubmit, reset } = useForm<Contato.EntidadeContato>();
     const [errorMessage, setErrorMessage] = useState('');
-    const [contatoSelecionado, setContatoSelecionado] = useState<DadosContato>();
+    const [contatoSelecionado, setContatoSelecionado] = useState<Contato.EntidadeContato>();
     const [isSucesso, setIsSuccesso] = useState(false);
     const whatsappUrl = `https://wa.me/${dados?.whatsapp}?text=Olá ${dados?.nomeContato}...`;
 
@@ -39,10 +31,10 @@ function DetalhesContato({ abrir, onFechar, dados }: PropriedadesDialogEdicao<Da
         }
     }, [dados, reset]);
 
-    const editarContato: SubmitHandler<DadosContato> = async (dados) => {
+    const editarContato: SubmitHandler<Contato.EntidadeContato> = async (dados) => {
 
         try {
-            await editarRegistro<DadosContato>({ data: dados }, 'editarContato', dados.idContato);
+            await editarRegistro<Contato.EntidadeContato>({ data: dados }, 'editarContato', dados.idContato);
             setErrorMessage('');
             setIsSuccesso(true);
             setTimeout(() => {

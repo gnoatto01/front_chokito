@@ -18,21 +18,6 @@ import Paginacao from "../../utils/paginacao";
 import { buscarPaginado, excluirRegistro } from "@/utils/axiosService";
 
 
-interface Usuario {
-    idUsuario: number;
-    usuario: string;
-    emailUsario: string;
-}
-
-interface Contato {
-    idContato: number;
-    email: string;
-    usuario: Usuario;
-    nomeContato: string;
-    telefone: string;
-    whatsapp: string;
-    descricaoContato: string;
-}
 
 
 //TODO:Adicionar busca por nome na busca paginada
@@ -40,11 +25,11 @@ interface Contato {
 
 export default function Contatos() {
 
-    const [contatos, setContatos] = useState<Contato[]>([]);
+    const [contatos, setContatos] = useState<Contato.EntidadeContato[]>([]);
     const [dadosFiltro, setDadosFiltro] = useState("");
     const [mensagemErro, setMensagemErro] = useState("");
     const [isSucesso, setIsSucesso] = useState(false);
-    const [contatoSelecionado, setContatoSelecionado] = useState<Contato | null>(null);
+    const [contatoSelecionado, setContatoSelecionado] = useState<Contato.EntidadeContato | null>(null);
     const [isRegistroContatoAberto, setIsRegistroContatoAberto] = useState(false);
     const [isDetalhesAberto, setIsDetalelhesAberto] = useState(false);
     const [mostrarAlertaPerigo, setMostrarAlertaPerigo] = useState(false);
@@ -76,7 +61,7 @@ export default function Contatos() {
     const fetchData = useCallback(async () => {
         try {
 
-            const resposta = await buscarPaginado<Contato>(paginaAtual - 1, 5, "contatos/buscaPaginada");
+            const resposta = await buscarPaginado<Contato.EntidadeContato>(paginaAtual - 1, 5, "contatos/buscaPaginada");
 
             if (resposta && Array.isArray(resposta.content)) {
                 setContatos(resposta.content);
@@ -111,8 +96,7 @@ export default function Contatos() {
     //---------------------------------------------------------
 
     //Detalhes dos contatos
-    const abrirDetalhes = (contato: Contato) => (event: React.MouseEvent<HTMLDivElement>) => {
-        console.log(contato);
+    const abrirDetalhes = (contato: Contato.EntidadeContato) => (event: React.MouseEvent<HTMLDivElement>) => {
         if (contato && contato.idContato) {
             setIsDetalelhesAberto(true);
             setContatoSelecionado(contato);

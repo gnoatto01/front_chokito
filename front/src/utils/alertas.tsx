@@ -39,9 +39,9 @@ const AlertaDePerigo: React.FC<AlertaDeConfirmacaoProps> = ({ isAberto, onFechar
                     Tem certeza de que deseja excluir este registro? todos os dados serão perdidos.
                 </AlertDialogDescription>
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-                    <AlertDialogCancel asChild>
+                    <AlertDialogAction asChild>
                         <Button className="bg-[#34A853] hover:bg-[#2E8B47]" onClick={onFechar}>Não</Button>
-                    </AlertDialogCancel>
+                    </AlertDialogAction>
                     <AlertDialogAction asChild>
                         <Button className="bg-[#EA4335] hover:bg-[#D3322D]" onClick={onConfirmacao}>Sim</Button>
                     </AlertDialogAction>

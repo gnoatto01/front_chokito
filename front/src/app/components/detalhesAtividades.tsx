@@ -4,30 +4,34 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { buscarTodos, criarRegistro } from "@/utils/axiosService"
+import { buscarTodos, editarRegistro } from "@/utils/axiosService"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { useCallback, useEffect, useState } from "react"
 import { AlertaDeSucesso } from "@/utils/alertas"
+import { formatarData } from "@/utils/formatarDatas"
 
 
-//TODO: colocar opcao de filtrar digitando o usuario resposanvel e solicitante
 
-function RegistroAtividade({ abrir, onFechar }: PropriedadesDialog) {
+function DetalhesAtividade({ abrir, onFechar, dados }: PropriedadesDialogEdicao<Atividade.EntidadeAtividade>) {
     const [errorMessage, setErrorMessage] = useState('');
     const [isSucesso, setIsSucesso] = useState(false);
-    const { register, handleSubmit, formState: { errors }, setValue } = useForm<Atividade.EntidadeAtividade>();
-    const [usuarios, setUsuarios] = useState<Usuario.EntidadeUsuario[]>([]);
-    const [clientes, setClientes] = useState<Usuario.EntidadeUsuario[]>([]);
+    const { register, handleSubmit, formState: { errors }, setValue, reset } = useForm<Atividade.EntidadeAtividadeEdicao>();
 
-    const [usuarioResponsavel, setUsuarioResponsavel] = useState<Usuario.EntidadeUsuario | null>(null);
-    const [usuarioSolicitante, setUsuarioSolicitante] = useState<Usuario.EntidadeUsuario | null>(null);
     const [statusAtividade, setStatusAtividade] = useState<string | null>(null);
 
 
-    const registrarAtividade: SubmitHandler<Atividade.EntidadeAtividade> = async (dados) => {
+    useEffect(() => {
+        if (dados) {
+            reset(dados);
+        } else {
+            reset();
+        }
+    }, [dados, reset]);
+
+    const editarAtividade: SubmitHandler<Atividade.EntidadeAtividadeEdicao> = async (dados) => {
 
         try {
-            await criarRegistro<Atividade.EntidadeAtividade>({ data: dados }, 'registrarAtividade');
+            await editarRegistro<Atividade.EntidadeAtividadeEdicao>({ data: dados }, 'editarAtividade', dados.idAtividade);
             setErrorMessage('');
             setIsSucesso(true);
             setTimeout(() => {
@@ -35,43 +39,23 @@ function RegistroAtividade({ abrir, onFechar }: PropriedadesDialog) {
                 onFechar();
             }, 2000);
         } catch (error) {
-            console.log(error);
-            throw error;
+            setErrorMessage('Erro ao editar dados da atividade. Tente novamente.');
+
         }
     }
 
-    const buscarUsuarios = useCallback(async () => {
-        try {
-            const respostaUsuarios = await buscarTodos<Usuario.EntidadeUsuario[]>('usuarios');
-            const respostaClientes = await buscarTodos<Usuario.EntidadeUsuario[]>('clientes');
-
-            if (respostaUsuarios && respostaClientes) {
-                setUsuarios(respostaUsuarios)
-                setClientes(respostaClientes);
-            } else {
-                console.error("Erro na busca na API");
-                setUsuarios([]);
-            }
-        } catch (error) {
-            console.error('Erro ao buscar dados:', error);
-            setUsuarios([]);
-        }
-    }, [])
-
-    useEffect(() => {
-        buscarUsuarios();
-    }, [buscarUsuarios]);
-
-
+    if (!dados) {
+        return null;
+    }
     return (
         <Dialog open={abrir} onOpenChange={onFechar}>
             <DialogContent className="w-full max-w-2xl">
-                <DialogTitle>Registro de atividades</DialogTitle>
-                <DialogDescription>Realize o cadastro de uma nova atividade</DialogDescription>
+                <DialogTitle>Detalhes da atividade</DialogTitle>
+                <DialogDescription>Realize a edição da atividade</DialogDescription>
                 {isSucesso && <AlertaDeSucesso message="Registro salvo com sucesso" />}
                 <div className="p-6 bg-background rounded-lg shadow-md">
-                    <h1 className="text-2xl font-bold mb-6 text-primary">Cadastro de nova atividade</h1>
-                    <form className="space-y-4" onSubmit={handleSubmit(registrarAtividade)}>
+                    <h1 className="text-2xl font-bold mb-6 text-primary">Detalhes da atividade</h1>
+                    <form className="space-y-4" onSubmit={handleSubmit(editarAtividade)}>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1">
                                 <Label htmlFor="nomeAtividade">Nome da atividade</Label>
@@ -80,63 +64,32 @@ function RegistroAtividade({ abrir, onFechar }: PropriedadesDialog) {
                             </div>
                             <div className="space-y-1">
                                 <Label htmlFor="usuarioResponsavel">Responsável</Label>
-                                <Select
-                                    onValueChange={(valorSelecionado) => {
-                                        // Encontra o usuário selecionado com base no valor selecionado
-                                        const usuarioSelecionado = usuarios.find(usuario => usuario.nomeCompleto === valorSelecionado);
-
-                                        // Se encontrou, define o usuário no estado
-                                        if (usuarioSelecionado) {
-                                            setUsuarioResponsavel(usuarioSelecionado);
-                                            setValue('usuarioResponsavel', usuarioSelecionado);
-                                        }
-                                    }}
-                                >
-                                    <SelectTrigger className="w-full">
-                                        <SelectValue placeholder="Selecione o responsável" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {usuarios.map((usuario) => (
-                                            <SelectItem key={usuario.idUsuario} value={usuario.nomeCompleto}>
-                                                {usuario.nomeCompleto}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <Input
+                                    type="text"
+                                    value={dados.usuarioResponsavel?.nomeCompleto || ''}
+                                    readOnly
+                                    className="w-full bg-gray-100 text-gray-500 cursor-not-allowed"
+                                />
                             </div>
-
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1">
                                 <Label htmlFor="dataInicioAtividade">Data de Início</Label>
-                                <Input id="dataInicioAtividade" type="datetime-local"
-                                    {...register('dataInicioAtividade', { required: false })} />
+                                <Input
+                                    type="text"
+                                    value={formatarData(dados.dataInicioAtividade) || ''}
+                                    readOnly
+                                    className="w-full bg-gray-100 text-gray-500 cursor-not-allowed"
+                                />
                             </div>
                             <div className="space-y-1">
                                 <Label htmlFor="usuarioSolicitante">Solicitante</Label>
-                                <Select
-                                    onValueChange={(valorSelecionado) => {
-                                        // Encontra o usuário selecionado com base no valor selecionado
-                                        const usuarioSelecionado = clientes.find(cliente => cliente.nomeCompleto === valorSelecionado);
-
-                                        // Se encontrou, define o usuário no estado
-                                        if (usuarioSelecionado) {
-                                            setUsuarioSolicitante(usuarioSelecionado);
-                                            setValue('usuarioSolicitante', usuarioSelecionado);
-                                        }
-                                    }}
-                                >
-                                    <SelectTrigger className="w-full">
-                                        <SelectValue placeholder="Selecione o solicitante" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {clientes.map((cliente) => (
-                                            <SelectItem key={cliente.idUsuario} value={cliente.nomeCompleto}>
-                                                {cliente.nomeCompleto}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <Input
+                                    type="text"
+                                    value={dados.usuarioSolicitante?.nomeCompleto || ''}
+                                    readOnly
+                                    className="w-full bg-gray-100 text-gray-500 cursor-not-allowed"
+                                />
                             </div>
 
                         </div>
@@ -150,7 +103,7 @@ function RegistroAtividade({ abrir, onFechar }: PropriedadesDialog) {
                             <div className="space-y-1">
                                 <Label htmlFor="solucaoProblema">Solução Aplicada</Label>
                                 <Textarea id="solucaoProblema" placeholder="Descreva a solução aplicada" className="min-h-[100px]"
-                                    {...register('solucaoProblema', { required: false })}
+                                    {...register('solucaoProblema', { required: true })}
                                 />
                             </div>
                         </div>
@@ -165,9 +118,10 @@ function RegistroAtividade({ abrir, onFechar }: PropriedadesDialog) {
                         <div className="space-y-1">
                             <Label htmlFor="statusAtividade">Status</Label>
                             <Select
+                                defaultValue={dados.statusAtividade}
                                 onValueChange={(dado) => {
-                                    setStatusAtividade(dado);
-                                    setValue('statusAtividade', dado);
+                                    setStatusAtividade(dado); // Atualiza o estado com o novo valor
+                                    setValue('statusAtividade', dado); // Atualiza o valor no formulário ou banco de dados
                                 }}
                             >
                                 <SelectTrigger className="w-full">
@@ -203,4 +157,4 @@ function RegistroAtividade({ abrir, onFechar }: PropriedadesDialog) {
     )
 }
 
-export default RegistroAtividade; 
+export default DetalhesAtividade; 

@@ -4,11 +4,13 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 import Layout from "./layoutPrincipal"
 import { IconeDetalhes } from "../../utils/icones"
-import { FaEdit, FaPlus, FaTrashAlt } from "react-icons/fa"
+import { FaDev, FaEdit, FaPlus, FaTrashAlt } from "react-icons/fa"
 import { useCallback, useEffect, useState } from "react"
 import RegistroAtividade from "./registrarAtividades"
-import { buscarTodos } from "@/utils/axiosService"
+import { buscarTodos, excluirRegistro } from "@/utils/axiosService"
 import DateTableCell from "@/utils/colunaDataFormatada"
+import DetalhesAtividade from "./detalhesAtividades"
+import AlertaDePerigo from "@/utils/alertas"
 
 interface PropriedadesUsuario {
     idUsuario: number;
@@ -17,30 +19,34 @@ interface PropriedadesUsuario {
     emailUsuario: string;
 }
 
-interface PropriedadesAtividades {
+interface DadosAtividade {
     idAtividade: number;
     nomeAtividade: string;
     usuarioResponsavel: PropriedadesUsuario;
-    usuaruioSolicitante: PropriedadesUsuario;
+    usuarioSolicitante: PropriedadesUsuario;
     dataInicioAtividade: string;
     problemaRelatado: string;
-    solucaoAplicada: string;
+    solucaoProblema: string;
     pendencia: string;
     statusAtividade: string;
 }
 
-//TODO: arrumar a celula da tabela de usuario solicitante e responsavel
-//TODO: formatar as datas para dd/MM/aa HH:mm
 
 function Atividades() {
 
     const [isRegistroAtividadesAberto, setIsRegistroAtividadesAberto] = useState(false);
-    const [atividades, setAtividades] = useState<PropriedadesAtividades[]>([]);
+    const [isDetalhesAtividadesABerto, setIsDetalhesAtividadesAberto] = useState(false);
+    const [atividadeSelecionada, setAtividadeSelecionada] = useState<DadosAtividade | null>(null);
+    const [atividades, setAtividades] = useState<DadosAtividade[]>([]);
+    const [mostrarAlertaPerigo, setMostrarAlertaPerigo] = useState(false);
+    const [salvarIdOpcaoDelete, setSalvarIdOpcaoDelete] = useState<number | null>(null);
+    const [mensagemErro, setMensagemErro] = useState("");
+    const [isSucesso, setIsSucesso] = useState(false);
 
     const buscarDados = useCallback(async () => {
         try {
 
-            const resposta = await buscarTodos<PropriedadesAtividades[]>('atividades',);
+            const resposta = await buscarTodos<DadosAtividade[]>('atividades',);
 
             if (resposta) {
                 setAtividades(resposta);
@@ -67,6 +73,56 @@ function Atividades() {
         setIsRegistroAtividadesAberto(false);
         buscarDados();
     }
+
+    const abrirDetalhes = (atividade: DadosAtividade) => (event: React.MouseEvent<HTMLDivElement>) => {
+
+        if (atividade && atividade.idAtividade) {
+            setIsDetalhesAtividadesAberto(true);
+            setAtividadeSelecionada(atividade);
+        } else {
+            console.error('Atividade inválida', atividade);
+        }
+
+    };
+
+    function fecharDetalhes() {
+        setIsDetalhesAtividadesAberto(false);
+        setAtividadeSelecionada(null);
+        buscarDados();
+    }
+
+
+    //---------------------------------------------------------
+
+    //Alerta de exclusao
+    const handleAlertaPerigo = (salvarId: number) => {
+        setSalvarIdOpcaoDelete(salvarId);
+        setMostrarAlertaPerigo(true);
+    };
+
+    const fecharAlertaPerigo = () => {
+        setMostrarAlertaPerigo(false);
+        setSalvarIdOpcaoDelete(null);
+    };
+
+    const confirmacaoDeDelecao = async () => {
+        if (salvarIdOpcaoDelete !== null) {
+            try {
+                await excluirRegistro('deletarAtividade', `${salvarIdOpcaoDelete}`)
+                setMensagemErro('');
+                setIsSucesso(true);
+                setTimeout(() => {
+                    setIsSucesso(false);
+                }, 2000);
+                buscarDados();
+            } catch (error) {
+                setMensagemErro('Erro ao excluir o registro. Tente novamente');
+            }
+        }
+        setMostrarAlertaPerigo(false);
+        setSalvarIdOpcaoDelete(null);
+    };
+    //---------------------------------------------------------
 
     return (
         <Layout>
@@ -99,19 +155,44 @@ function Atividades() {
                             {atividades.map((atividade) => (
                                 <TableRow key={atividade.idAtividade}>
                                     <TableCell>{atividade.nomeAtividade}</TableCell>
-                                    <TableCell>{}</TableCell>
-                                    <TableCell>{atividade.dataInicioAtividade}</TableCell>
-                                    <TableCell>{}</TableCell>
+                                    <TableCell>{atividade.usuarioResponsavel.nomeCompleto}</TableCell>
+                                    <DateTableCell data={atividade.dataInicioAtividade}></DateTableCell>
+                                    <TableCell>{atividade.usuarioSolicitante.nomeCompleto}</TableCell>
                                     <TableCell>{atividade.problemaRelatado}</TableCell>
-                                    <TableCell>{atividade.solucaoAplicada}</TableCell>
+                                    <TableCell>{atividade.solucaoProblema}</TableCell>
                                     <TableCell>{atividade.pendencia}</TableCell>
                                     <TableCell>{atividade.statusAtividade}</TableCell>
+                                    <TableCell>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="outline" size="icon" className="h-8 w-8">
+                                                    <IconeDetalhes color="#2a4564" className="h-5 w-5" />
+                                                    <span className="sr-only">Opções</span>
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuLabel>Opções</DropdownMenuLabel>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem onClick={abrirDetalhes(atividade)} className="cursor-pointer flex items-center gap-2">
+                                                    <FaEdit className="text-blue-500" />
+                                                    <span>Editar</span>
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => handleAlertaPerigo(atividade.idAtividade)} className="cursor-pointer flex items-center gap-2 text-red-600">
+                                                    <FaTrashAlt />
+                                                    <span>Excluir</span>
+                                                </DropdownMenuItem>
+                                                <DropdownMenuSeparator />
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
                     </Table>
+                    <DetalhesAtividade abrir={isDetalhesAtividadesABerto} onFechar={fecharDetalhes} dados={atividadeSelecionada} />
                 </div>
                 <RegistroAtividade abrir={isRegistroAtividadesAberto} onFechar={fecharRegistroAtividades} />
+                <AlertaDePerigo isAberto={mostrarAlertaPerigo} onFechar={fecharAlertaPerigo} onConfirmacao={confirmacaoDeDelecao} />
             </div>
         </Layout>
 
