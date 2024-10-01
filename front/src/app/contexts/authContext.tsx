@@ -23,7 +23,6 @@ export const AuthContext = createContext<AuthContextData>({} as AuthContextData)
 export function AuthProvider({ children }: AuthProviderProps) {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-    // Sincronizar o estado de autenticação com o cookie
     useEffect(() => {
         const token = nookies.get(null, 'naturalbit.token');
         if (token) {
@@ -36,7 +35,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Função de login
     async function signIn({ usuario, senhaUsuario }: dadosFormulario) {
         try {
+            //const response = await axios.post('https://api.naturalbit.com.br:705/suportebit/login', { usuario, senhaUsuario });
+
             const response = await axios.post('http://localhost:8080/suportebit/login', { usuario, senhaUsuario });
+
 
             setIsAuthenticated(true);
 
@@ -56,6 +58,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             throw new Error('Falha na autenticação.');
         }
     }
+
 
     return (
         <AuthContext.Provider value={{ isAuthenticated, signIn }}>
