@@ -8,8 +8,7 @@ import { buscarTodos, editarRegistro } from "@/utils/axiosService"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { useCallback, useEffect, useState } from "react"
 import { AlertaDeSucesso } from "@/utils/alertas"
-import { formatarData } from "@/utils/formatarDatas"
-
+import {formatarData } from "@/utils/formatarDatas"
 
 
 function DetalhesAtividade({ abrir, onFechar, dados }: PropriedadesDialogEdicao<Atividade.EntidadeAtividade>) {
@@ -82,6 +81,14 @@ function DetalhesAtividade({ abrir, onFechar, dados }: PropriedadesDialogEdicao<
                                     className="w-full bg-gray-100 text-gray-500 cursor-not-allowed"
                                 />
                             </div>
+
+                            <div className="space-y-1">
+                                <Label htmlFor="tempoGasto">Tempo gasto</Label>
+                                <Input id="tempoGasto" type="text"
+                                    defaultValue={dados.tempoGasto == null ? '' : dados.tempoGasto}
+                                    {...register('tempoGasto', { required: false })} />
+                            </div>
+
                             <div className="space-y-1">
                                 <Label htmlFor="usuarioSolicitante">Solicitante</Label>
                                 <Input
@@ -91,6 +98,7 @@ function DetalhesAtividade({ abrir, onFechar, dados }: PropriedadesDialogEdicao<
                                     className="w-full bg-gray-100 text-gray-500 cursor-not-allowed"
                                 />
                             </div>
+
 
                         </div>
                         <div className="grid grid-cols-2 gap-4">

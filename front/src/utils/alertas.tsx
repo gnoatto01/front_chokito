@@ -8,9 +8,13 @@ interface DataAlerta {
 }
 
 interface AlertaDeConfirmacaoProps {
+    titulo: string;
+    descricao: string;
     isAberto: boolean;
     onFechar: () => void;
     onConfirmacao: () => void;
+
+
 }
 
 export function AlertaDeSucesso({ message }: DataAlerta) {
@@ -27,16 +31,16 @@ export function AlertaDeSucesso({ message }: DataAlerta) {
     )
 }
 
-const AlertaDePerigo: React.FC<AlertaDeConfirmacaoProps> = ({ isAberto, onFechar, onConfirmacao }) => {
+const AlertaDePerigo: React.FC<AlertaDeConfirmacaoProps> = ({ titulo, descricao, isAberto, onFechar, onConfirmacao }) => {
     return (
         <AlertDialog open={isAberto} onOpenChange={onFechar}>
             <AlertDialogTrigger asChild>
                 <button style={{ display: 'none' }}></button>
             </AlertDialogTrigger>
             <AlertDialogContent>
-                <AlertDialogTitle>Confirmar Exclusão?</AlertDialogTitle>
+                <AlertDialogTitle>{titulo}</AlertDialogTitle>
                 <AlertDialogDescription>
-                    Tem certeza de que deseja excluir este registro? todos os dados serão perdidos.
+                    {descricao}
                 </AlertDialogDescription>
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
                     <AlertDialogAction asChild>
@@ -52,7 +56,6 @@ const AlertaDePerigo: React.FC<AlertaDeConfirmacaoProps> = ({ isAberto, onFechar
 
 };
 export default AlertaDePerigo;
-
 
 
 

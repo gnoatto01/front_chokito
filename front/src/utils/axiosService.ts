@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from 'axios';
+import axios, { Axios, AxiosResponse } from 'axios';
 import { parseCookies } from 'nookies';
 
 
@@ -59,6 +59,37 @@ export const buscarPaginado = async <T>(pagina: number, tamanho: number, linkReq
         return resposta.data;
     } catch (error) {
         console.error("Erro na busca de dados paginada", error);
+        throw error;
+    }
+}
+
+//#################BUSCA COM PARAMETROS#################
+export const buscarComParametros = async <T>(
+    linkRequisicao: string,
+    parametros?: Record<string, any> | string
+): Promise<T> => {
+    const cookies = parseCookies();
+    const accessToken = cookies['naturalbit.token'];
+
+    if (!accessToken) {
+        throw new Error('Você não está autenticado');
+    }
+
+    // Verifica se parametros é um objeto ou uma string e converte se necessário
+    const params = typeof parametros === 'object' && parametros !== null ? parametros : {};
+
+    try {
+        const resposta: AxiosResponse<T> = await axios.get(`${baseUrl}/${linkRequisicao}`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+            params, // Passa o objeto params
+        });
+        console.log(resposta);
+        return resposta.data;
+
+    } catch (error) {
+        console.error("Erro na busca de dados", error);
         throw error;
     }
 }
@@ -131,5 +162,30 @@ export const excluirRegistro = async <T>(linkRequisicao: string, idRegistro: num
         throw error;
     }
 }
+
+
+export const inativarRegistro = async <T>(linkRequisicao: string, idRegistro: number | string) => {
+    const cookies = parseCookies();
+    const accessToken = cookies['naturalbit.token'];
+
+    if (!accessToken) {
+        throw new Error('Você não está autenticado');
+    }
+
+    try {
+        await axios.get<T>(`${baseUrl}/${linkRequisicao}/${idRegistro}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            }
+        );
+    } catch (error) {
+        console.error("Erro na inativação do registro", error);
+        throw error;
+    }
+}
+
+
 
 

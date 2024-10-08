@@ -8,30 +8,21 @@ import { ClassAttributes, InputHTMLAttributes, JSX, useState } from "react";
 import { AlertaDeSucesso } from "../../utils/alertas";
 import InputMask from 'react-input-mask';
 import { criarRegistro } from "@/utils/axiosService";
-
-
-interface DadosContato {
-    nomeContato: string;
-    email: string;
-    telefone: string;
-    whatsapp: string;
-    descricaoContato: string;
-}
-
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 
 
 function RegistroContato({ abrir, onFechar }: PropriedadesDialog) {
     const [errorMessage, setErrorMessage] = useState('');
     const [isSuccesso, setIsSuccesso] = useState(false);
-    const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<DadosContato>();
+    const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<Contato.EntidadeContato>();
     const [tipoWhatsapp, setTipoWhatsapp] = useState<'Celular' | 'Fixo'>('Celular');
 
-    const registroContato: SubmitHandler<DadosContato> = async (dados) => {
+    const registroContato: SubmitHandler<Contato.EntidadeContato> = async (dados) => {
         const whatsappSemMascara = dados.whatsapp.replace(/\D/g, '');
         try {
 
-            await criarRegistro<DadosContato>({ data: dados }, 'registrarContato');
+            await criarRegistro<Contato.EntidadeContato>({ data: dados }, 'registrarContato');
 
             setErrorMessage('');
             setIsSuccesso(true);
@@ -75,15 +66,14 @@ function RegistroContato({ abrir, onFechar }: PropriedadesDialog) {
                                         {errors.nomeContato && <span className="text-[#EA4335]">O nome do contato é obrigatório</span>}
                                     </div>
                                     <div className="relative">
-                                        <Label htmlFor="email">E-mail*</Label>
+                                        <Label htmlFor="email">E-mail</Label>
                                         <Input
                                             id="email"
                                             type="email"
                                             placeholder="Insira o e-mail do contato"
                                             autoComplete="off"
-                                            {...register('email', { required: true })}
+                                            {...register('email', { required: false })}
                                         />
-                                        {errors.email && <span className="text-[#EA4335]">O e-mail do contato é obrigatório.</span>}
                                     </div>
                                     <div className="relative">
                                         <Label htmlFor="telefone">Telefone</Label>
@@ -96,28 +86,36 @@ function RegistroContato({ abrir, onFechar }: PropriedadesDialog) {
                                     </div>
                                     <div className="relative">
                                         <div>
-                                            <label htmlFor="tipoWhatsapp" className="block text-sm font-mediumt text-muted-foreground">Tipo Whatsapp</label>
-                                            <select
-                                                id="tipoWhatsapp"
-                                                value={tipoWhatsapp}
-                                                onChange={(e) => setTipoWhatsapp(e.target.value as 'Celular' | 'Fixo')}
-                                                className="block w-full mt-1 border border-gray-300 rounded-md bg-gray-50 text-muted-foreground"
+                                      
+                                            <Label htmlFor="tipoWhatsapp">Status</Label>
+                                            <Select
+                                                onValueChange={(dado) => {
+                                                    setTipoWhatsapp(dado as 'Celular' | 'Fixo');
+
+                                                }}
                                             >
-                                                <option value="Celular">Celular</option>
-                                                <option value="Fixo">Fixo</option>
-                                            </select>
+                                                <SelectTrigger className="w-full">
+                                                    <SelectValue placeholder="Tipo do Whatsapp" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="Celular">Celular</SelectItem>
+                                                    <SelectItem value="Fixo">Fixo</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+
+
+
                                         </div>
-                                        <Label htmlFor="whatsapp">Whatsapp*</Label>
+                                        <Label htmlFor="whatsapp">Whatsapp</Label>
                                         <InputMask
                                             id="whatsapp"
                                             mask={mask}
                                             {...register('whatsapp', {
-                                                required: 'O número de WhatsApp é obrigatório.',
+                                                required:false,
                                             })}
+                                            className="input-field block w-full px-3 py-2 mt-2 border-none rounded-md"
                                         >
                                         </InputMask>
-
-                                        {errors.whatsapp && <span className="text-[#EA4335]">O Whatsapp do contato é obrigatório, (ex: (XX) XXXXX-XXXX)</span>}
                                     </div>
                                     <div className="relative">
                                         <Label htmlFor="descricaoContato">Descrição</Label>

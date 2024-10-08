@@ -4,29 +4,34 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 import Layout from "./layoutPrincipal"
 import { IconeDetalhes } from "../../utils/icones"
-import { FaCheck, FaDev, FaEdit, FaPlus } from "react-icons/fa"
+import { FaCheck, FaDev, FaEdit, FaPlus, FaSearch } from "react-icons/fa"
 import { useCallback, useEffect, useState } from "react"
-import { buscarTodos, excluirRegistro } from "@/utils/axiosService"
+import { buscarComParametros, buscarTodos, excluirRegistro, inativarRegistro } from "@/utils/axiosService"
 import AlertaDePerigo from "@/utils/alertas"
 import RegistroSistema from "./registrarSistema"
+import DetalhesSistema from "./detalhesSistema"
+import { Console } from "console"
 
 
 function Sistema() {
 
     const [isRegistroSistemaAberto, setIsRegistroSistemaAberto] = useState(false);
-    const [isDetalhesAtividadesABerto, setIsDetalhesAtividadesAberto] = useState(false);
+    const [isDetalhesSistemaABerto, setIsDetalhesSistemaAberto] = useState(false);
     const [sistemaSelecionado, setSistemaSelecionado] = useState<SistemaNameSpace.EntidadeSistema | null>(null);
     const [sistemas, setSistemas] = useState<SistemaNameSpace.EntidadeSistema[]>([]);
     const [mostrarAlertaPerigo, setMostrarAlertaPerigo] = useState(false);
     const [salvarIdOpcaoDelete, setSalvarIdOpcaoDelete] = useState<number | null>(null);
     const [mensagemErro, setMensagemErro] = useState("");
     const [isSucesso, setIsSucesso] = useState(false);
+    const [parametrosFiltro, setParametrosFiltro] = useState('Ativo');
 
+
+    //TODO: verificar o porque os parametros nao setam 
     const buscarDados = useCallback(async () => {
+        console.log(parametrosFiltro);
         try {
-
-            const resposta = await buscarTodos<SistemaNameSpace.EntidadeSistema[]>('listarSistemas',);
-
+           
+            const resposta = await buscarComParametros<SistemaNameSpace.EntidadeSistema[]>('listarSistemas', parametrosFiltro);
             if (resposta) {
                 setSistemas(resposta);
 
@@ -53,19 +58,18 @@ function Sistema() {
         buscarDados();
     }
 
-    const abrirDetalhes = (sistema: SistemaNameSpace.EntidadeSistema) => (event: React.MouseEvent<HTMLDivElement>) => {
-
+    const abrirDetalhes = (sistema: SistemaNameSpace.EntidadeSistema) => {
         if (sistema && sistema.idSistema) {
-            setIsDetalhesAtividadesAberto(true);
+            setIsDetalhesSistemaAberto(true);
             setSistemaSelecionado(sistema);
         } else {
-            console.error('Atividade inválida', sistema);
+            console.error('Sistema inválido', sistema);
         }
 
     };
 
     function fecharDetalhes() {
-        setIsDetalhesAtividadesAberto(false);
+        setIsDetalhesSistemaAberto(false);
         setSistemaSelecionado(null);
         buscarDados();
     }
@@ -87,7 +91,7 @@ function Sistema() {
     const confirmacaoDeDelecao = async () => {
         if (salvarIdOpcaoDelete !== null) {
             try {
-                await excluirRegistro('deletarAtividade', `${salvarIdOpcaoDelete}`)
+                await inativarRegistro('desativarSistema', `${salvarIdOpcaoDelete}`)
                 setMensagemErro('');
                 setIsSucesso(true);
                 setTimeout(() => {
@@ -95,7 +99,7 @@ function Sistema() {
                 }, 2000);
                 buscarDados();
             } catch (error) {
-                setMensagemErro('Erro ao excluir o registro. Tente novamente');
+                setMensagemErro('Erro ao inativar o registro. Tente novamente');
             }
         }
         setMostrarAlertaPerigo(false);
@@ -116,6 +120,8 @@ function Sistema() {
                         <FaPlus className="text-white" />
                         <span>Cadastrar</span>
                     </Button>
+
+
                     <Table className="min-w-full divide-y divide-gray-200 bg-white shadow-md rounded-lg overflow-hidden">
                         <TableHeader>
                             <TableRow className="bg-gray-200 text-gray-600">
@@ -130,7 +136,7 @@ function Sistema() {
                                 <TableRow key={sistema.idSistema} className="hover:bg-gray-100 transition-colors duration-200">
                                     <TableCell className="px-6 py-4 whitespace-nowrap">{sistema.idSistema}</TableCell>
                                     <TableCell className="px-6 py-4 whitespace-nowrap">{sistema.nomeSistema}</TableCell>
-                                    <TableCell className="px-6 py-4 whitespace-nowrap">{sistema.sistemaAtivo ? "Ativo" : "Inativo"}</TableCell>
+                                    <TableCell className="px-6 py-4 whitespace-nowrap">{sistema.sistemaAtivo}</TableCell>
                                     <TableCell className="px-6 py-4 whitespace-nowrap text-right">
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
@@ -158,10 +164,35 @@ function Sistema() {
                             ))}
                         </TableBody>
                     </Table>
+                    <DetalhesSistema abrir={isDetalhesSistemaABerto} onFechar={fecharDetalhes} dados={sistemaSelecionado} />
+
+                    <div className="flex justify-end mt-4">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button id="btn-filtrar" className="bg-[#2C3E50] hover:bg-[#152232] p-3  shadow-lg transition-transform transform hover:scale-105 flex items-center gap-2 mb-4">
+                                    <FaSearch />
+                                    Filtrar
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuItem className="cursor-pointer" onClick={() => {setParametrosFiltro('Todos'); buscarDados()}}>
+                                    <span>Todos</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem className="cursor-pointer" onClick={() => {setParametrosFiltro('Ativo'); buscarDados()}} >
+                                    <span>Ativos</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem className="cursor-pointer" onClick={() =>{setParametrosFiltro('Inativo'); buscarDados()}}>
+                                    <span>Inativos</span>
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                        <p>Filtro Selecionado: {parametrosFiltro}</p>
+
+                    </div>
 
                 </div>
-                <RegistroSistema abrir={isRegistroSistemaAberto} onFechar={fecharRegistroSistema}/>
-                <AlertaDePerigo isAberto={mostrarAlertaPerigo} onFechar={fecharAlertaPerigo} onConfirmacao={confirmacaoDeDelecao} />
+                <RegistroSistema abrir={isRegistroSistemaAberto} onFechar={fecharRegistroSistema} />
+                <AlertaDePerigo titulo="Confirmar inativação?" descricao="O registro será inativado do sistema." isAberto={mostrarAlertaPerigo} onFechar={fecharAlertaPerigo} onConfirmacao={confirmacaoDeDelecao} />
             </div>
         </Layout>
 

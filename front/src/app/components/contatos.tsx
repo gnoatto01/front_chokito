@@ -21,7 +21,6 @@ import { buscarPaginado, excluirRegistro } from "@/utils/axiosService";
 
 
 //TODO:Adicionar busca por nome na busca paginada
-//TODO: criar um util para abrir e fechar dialogs
 
 export default function Contatos() {
 
@@ -188,11 +187,11 @@ export default function Contatos() {
                                     size="lg"
                                 >
                                     <FaPaste className="text-white" />
-                                    <span>Ações</span>
+                                    <span>Exportar</span>
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent>
-                                <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                                <DropdownMenuLabel>Exportar</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onClick={handleExportarExcel} className="cursor-pointer flex items-center gap-2 text-green-500">
                                     <FaFileExcel />
@@ -212,7 +211,7 @@ export default function Contatos() {
                     {isSucesso && <AlertaDeSucesso message="Registro excluído com sucesso" />}
                     {filtrarContatos.map((contato) => (
                         <div key={contato.idContato} className="bg-white rounded-lg shadow-md p-4 hover:bg-gray-50 transition">
-                            <div className="flex items-center justify-between">
+                            <div onClick={abrirDetalhes(contato)} className="flex items-center justify-between cursor-pointer">
                                 <div className="flex items-center gap-4">
                                     <Avatar className="h-12 w-12">
                                         <AvatarFallback>{contato.nomeContato.slice(0, 2).toUpperCase()}</AvatarFallback>
@@ -220,7 +219,7 @@ export default function Contatos() {
                                     <div>
                                         <div className="font-semibold text-lg text-gray-800">{contato.nomeContato}</div>
                                         <div className="text-gray-600">
-                                            {contato.email} | <a href={`https://wa.me/${contato.whatsapp}?text=Olá ${contato.nomeContato}...`} target="_blank">{contato.whatsapp}</a>
+                                            {contato.email}
                                         </div>
                                     </div>
                                 </div>
@@ -260,7 +259,7 @@ export default function Contatos() {
                     />
                 </div>
                 <RegistroContato abrir={isRegistroContatoAberto} onFechar={fecharRegistroContatos} />
-                <AlertaDePerigo isAberto={mostrarAlertaPerigo} onFechar={fecharAlertaPerigo} onConfirmacao={confirmacaoDeDelecao} />
+                <AlertaDePerigo titulo="Confirmar exclusão?" descricao="Todos os dados do registro serão excluídos do sistema" isAberto={mostrarAlertaPerigo} onFechar={fecharAlertaPerigo} onConfirmacao={confirmacaoDeDelecao} />
             </div>
         </Layout>
 

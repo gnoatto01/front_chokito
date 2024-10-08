@@ -6,6 +6,7 @@ declare namespace Atividade {
         usuarioResponsavel: Usuario.EntidadeUsuario; 
         usuarioSolicitante: Usuario.EntidadeUsuario; 
         dataInicioAtividade: string;
+        tempoGasto: string; 
         problemaRelatado: string;
         solucaoProblema: string;
         statusAtividade: string;
@@ -16,6 +17,7 @@ declare namespace Atividade {
         idAtividade: number;
         nomeAtividade: string;
         problemaRelatado: string;
+        tempoGasto: string; 
         solucaoProblema: string;
         statusAtividade: string;
         pendencia: string;

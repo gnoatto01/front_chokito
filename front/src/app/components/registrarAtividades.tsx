@@ -8,6 +8,7 @@ import { buscarTodos, criarRegistro } from "@/utils/axiosService"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { useCallback, useEffect, useState } from "react"
 import { AlertaDeSucesso } from "@/utils/alertas"
+import { formatarData, formatarDataDeAgora } from "@/utils/formatarDatas"
 
 
 //TODO: colocar opcao de filtrar digitando o usuario resposanvel e solicitante
@@ -22,6 +23,9 @@ function RegistroAtividade({ abrir, onFechar }: PropriedadesDialog) {
     const [usuarioResponsavel, setUsuarioResponsavel] = useState<Usuario.EntidadeUsuario | null>(null);
     const [usuarioSolicitante, setUsuarioSolicitante] = useState<Usuario.EntidadeUsuario | null>(null);
     const [statusAtividade, setStatusAtividade] = useState<string | null>(null);
+
+    const [dataEHoraAtual, setDataEHoraAtual] = useState('');
+
 
 
     const registrarAtividade: SubmitHandler<Atividade.EntidadeAtividade> = async (dados) => {
@@ -59,6 +63,11 @@ function RegistroAtividade({ abrir, onFechar }: PropriedadesDialog) {
     }, [])
 
     useEffect(() => {
+        const agora = new Date();
+        const mesDia = agora.toISOString().slice(0, 10);
+        const horaMinuto = agora.toLocaleTimeString().slice(0, 5);
+        const dataDeAgoraFormatada = formatarDataDeAgora(mesDia, horaMinuto);
+        setDataEHoraAtual(dataDeAgoraFormatada);
         buscarUsuarios();
     }, [buscarUsuarios]);
 
@@ -77,6 +86,7 @@ function RegistroAtividade({ abrir, onFechar }: PropriedadesDialog) {
                                 <Label htmlFor="nomeAtividade">Nome da atividade</Label>
                                 <Input autoComplete="off" placeholder="Digite o nome da tarefa"
                                     {...register('nomeAtividade', { required: true })} />
+                                {errors.nomeAtividade && <span className="text-[#EA4335]">O nome da atividade é obrigatório </span>}
                             </div>
                             <div className="space-y-1">
                                 <Label htmlFor="usuarioResponsavel">Responsável</Label>
@@ -103,6 +113,7 @@ function RegistroAtividade({ abrir, onFechar }: PropriedadesDialog) {
                                         ))}
                                     </SelectContent>
                                 </Select>
+                                {errors.usuarioResponsavel && <span className="text-[#EA4335]">O usuário responsável é obrigatório </span>}
                             </div>
 
                         </div>
@@ -110,8 +121,18 @@ function RegistroAtividade({ abrir, onFechar }: PropriedadesDialog) {
                             <div className="space-y-1">
                                 <Label htmlFor="dataInicioAtividade">Data de Início</Label>
                                 <Input id="dataInicioAtividade" type="datetime-local"
+                                    defaultValue={dataEHoraAtual}
                                     {...register('dataInicioAtividade', { required: false })} />
                             </div>
+
+
+                            <div className="space-y-1">
+                                <Label htmlFor="tempoGasto">Tempo gasto</Label>
+                                <Input id="tempoGasto" type="text" autoComplete="off"
+                                    {...register('tempoGasto', { required: false })} />
+                            </div>
+
+
                             <div className="space-y-1">
                                 <Label htmlFor="usuarioSolicitante">Solicitante</Label>
                                 <Select
@@ -146,6 +167,8 @@ function RegistroAtividade({ abrir, onFechar }: PropriedadesDialog) {
                                 <Textarea id="problemaRelatado" placeholder="Descreva o problema relatado" className="min-h-[100px]"
                                     {...register('problemaRelatado', { required: true })}
                                 />
+                                {errors.nomeAtividade && <span className="text-[#EA4335]">O problema relatado é obrigatório </span>}
+
                             </div>
                             <div className="space-y-1">
                                 <Label htmlFor="solucaoProblema">Solução Aplicada</Label>

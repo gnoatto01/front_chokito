@@ -12,32 +12,12 @@ import DateTableCell from "@/utils/colunaDataFormatada"
 import DetalhesAtividade from "./detalhesAtividades"
 import AlertaDePerigo from "@/utils/alertas"
 
-interface PropriedadesUsuario {
-    idUsuario: number;
-    usuario: string;
-    nomeCompleto: string;
-    emailUsuario: string;
-}
-
-interface DadosAtividade {
-    idAtividade: number;
-    nomeAtividade: string;
-    usuarioResponsavel: PropriedadesUsuario;
-    usuarioSolicitante: PropriedadesUsuario;
-    dataInicioAtividade: string;
-    problemaRelatado: string;
-    solucaoProblema: string;
-    pendencia: string;
-    statusAtividade: string;
-}
-
-
 function Atividades() {
 
     const [isRegistroAtividadesAberto, setIsRegistroAtividadesAberto] = useState(false);
     const [isDetalhesAtividadesABerto, setIsDetalhesAtividadesAberto] = useState(false);
-    const [atividadeSelecionada, setAtividadeSelecionada] = useState<DadosAtividade | null>(null);
-    const [atividades, setAtividades] = useState<DadosAtividade[]>([]);
+    const [atividadeSelecionada, setAtividadeSelecionada] = useState<Atividade.EntidadeAtividade | null>(null);
+    const [atividades, setAtividades] = useState<Atividade.EntidadeAtividade[]>([]);
     const [mostrarAlertaPerigo, setMostrarAlertaPerigo] = useState(false);
     const [salvarIdOpcaoDelete, setSalvarIdOpcaoDelete] = useState<number | null>(null);
     const [mensagemErro, setMensagemErro] = useState("");
@@ -46,7 +26,7 @@ function Atividades() {
     const buscarDados = useCallback(async () => {
         try {
 
-            const resposta = await buscarTodos<DadosAtividade[]>('atividades',);
+            const resposta = await buscarTodos<Atividade.EntidadeAtividade[]>('atividades',);
 
             if (resposta) {
                 setAtividades(resposta);
@@ -74,7 +54,7 @@ function Atividades() {
         buscarDados();
     }
 
-    const abrirDetalhes = (atividade: DadosAtividade) => (event: React.MouseEvent<HTMLDivElement>) => {
+    const abrirDetalhes = (atividade: Atividade.EntidadeAtividade) => (event: React.MouseEvent<HTMLDivElement>) => {
 
         if (atividade && atividade.idAtividade) {
             setIsDetalhesAtividadesAberto(true);
@@ -143,6 +123,7 @@ function Atividades() {
                                 <TableHead>Nome da atividade</TableHead>
                                 <TableHead>Responsável</TableHead>
                                 <TableHead>Data de início</TableHead>
+                                <TableHead>Tempo gasto</TableHead>
                                 <TableHead>Solicitante</TableHead>
                                 <TableHead>Problema relatado</TableHead>
                                 <TableHead>Solução aplicada</TableHead>
@@ -157,6 +138,9 @@ function Atividades() {
                                     <TableCell>{atividade.nomeAtividade}</TableCell>
                                     <TableCell>{atividade.usuarioResponsavel.nomeCompleto}</TableCell>
                                     <DateTableCell data={atividade.dataInicioAtividade}></DateTableCell>
+                                    <TableCell>
+                                        {atividade.tempoGasto} h
+                                    </TableCell>
                                     <TableCell>{atividade.usuarioSolicitante.nomeCompleto}</TableCell>
                                     <TableCell>{atividade.problemaRelatado}</TableCell>
                                     <TableCell>{atividade.solucaoProblema}</TableCell>
@@ -192,7 +176,7 @@ function Atividades() {
                     <DetalhesAtividade abrir={isDetalhesAtividadesABerto} onFechar={fecharDetalhes} dados={atividadeSelecionada} />
                 </div>
                 <RegistroAtividade abrir={isRegistroAtividadesAberto} onFechar={fecharRegistroAtividades} />
-                <AlertaDePerigo isAberto={mostrarAlertaPerigo} onFechar={fecharAlertaPerigo} onConfirmacao={confirmacaoDeDelecao} />
+                <AlertaDePerigo titulo="Confirmar exclusão?" descricao="Todos os dados do registro serão excluídos do sistema" isAberto={mostrarAlertaPerigo} onFechar={fecharAlertaPerigo} onConfirmacao={confirmacaoDeDelecao} />
             </div>
         </Layout>
 

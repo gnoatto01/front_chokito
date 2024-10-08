@@ -21,7 +21,7 @@ function DetalhesContato({ abrir, onFechar, dados }: PropriedadesDialogEdicao<Co
     const [errorMessage, setErrorMessage] = useState('');
     const [contatoSelecionado, setContatoSelecionado] = useState<Contato.EntidadeContato>();
     const [isSucesso, setIsSuccesso] = useState(false);
-    const whatsappUrl = `https://wa.me/${dados?.whatsapp}?text=Olá ${dados?.nomeContato}...`;
+    const whatsappUrl = dados?.whatsapp != '' ? `https://wa.me/${dados?.whatsapp}?text=Olá ${dados?.nomeContato}...` : '#';
 
     useEffect(() => {
         if (dados) {
@@ -74,31 +74,29 @@ function DetalhesContato({ abrir, onFechar, dados }: PropriedadesDialogEdicao<Co
                                 <div className="flex-1">
                                     <h3 className="text-lg font-semibold">Detalhes do contato</h3>
 
-                                    <div className="grid grid-cols-2 gap-4 text-muted-foreground">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-muted-foreground">
                                         <div>
-                                            <Label htmlFor="name">Nome</Label>
-                                            <Input id="name"
-                                                {...register('nomeContato', { required: true })} />
-                                            <Label htmlFor="email">Email</Label>
-                                            <Input id="email" type="email"
-                                                {...register('email', { required: false })} />
+                                            <Label htmlFor="nomeContato">Nome</Label>
+                                            <Input id="nomeContato" {...register('nomeContato', { required: true })} />
+
+                                            <Label htmlFor="telefone" className="mt-4">Telefone</Label>
+                                            <Input id="telefone" type="tel" {...register('telefone', { required: false })} />
                                         </div>
+
                                         <div>
+                                            <Label htmlFor="email">Email</Label>
+                                            <Input id="email" type="email" {...register('email', { required: false })} />
+
+                                            <Label htmlFor="whatsapp" className="mt-4">Whatsapp</Label>
                                             <div className="flex items-center">
-                                                <Label htmlFor="phone" className="flex-1">Telefone</Label>
-                                            </div>
-                                            <Input id="phone" type="tel"
-                                                {...register('telefone', { required: false })} />
-                                            <div className="flex items-center mt-4">
-                                                <Label htmlFor="whatsapp" className="flex-1">Whatsapp</Label>
-                                                <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
-                                                    <FaWhatsapp size={24} className="text-lg ml-2 mb-2" />
+                                                <Input id="whatsapp" type="text" {...register('whatsapp', { required: false })} />
+                                                <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="ml-2">
+                                                    <FaWhatsapp size={24} className="text-lg" />
                                                 </a>
                                             </div>
-                                            <Input id="whatsapp" type="text"
-                                                {...register('whatsapp', { required: true })} />
                                         </div>
                                     </div>
+
                                 </div>
                                 <Separator />
                                 <div className="flex-1">
