@@ -6,10 +6,8 @@ import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { FaPhone, FaWhatsapp } from 'react-icons/fa';
-import { ArrowLeftIcon, ClockIcon, BookmarkIcon } from "@radix-ui/react-icons";
+import { FaWhatsapp } from 'react-icons/fa';
 import { SubmitHandler, useForm } from "react-hook-form";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { AlertaDeSucesso } from "../../utils/alertas";
 import { editarRegistro } from "@/utils/axiosService";
@@ -77,19 +75,19 @@ function DetalhesContato({ abrir, onFechar, dados }: PropriedadesDialogEdicao<Co
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-muted-foreground">
                                         <div>
                                             <Label htmlFor="nomeContato">Nome</Label>
-                                            <Input id="nomeContato" {...register('nomeContato', { required: true })} />
+                                            <Input autoComplete="off" id="nomeContato" {...register('nomeContato', { required: true })} />
 
                                             <Label htmlFor="telefone" className="mt-4">Telefone</Label>
-                                            <Input id="telefone" type="tel" {...register('telefone', { required: false })} />
+                                            <Input autoComplete="off" id="telefone" type="tel" {...register('telefone', { required: false })} />
                                         </div>
 
                                         <div>
                                             <Label htmlFor="email">Email</Label>
-                                            <Input id="email" type="email" {...register('email', { required: false })} />
+                                            <Input autoComplete="off" id="email" type="email" {...register('email', { required: false })} />
 
                                             <Label htmlFor="whatsapp" className="mt-4">Whatsapp</Label>
                                             <div className="flex items-center">
-                                                <Input id="whatsapp" type="text" {...register('whatsapp', { required: false })} />
+                                                <Input autoComplete="off" id="whatsapp" type="text" {...register('whatsapp', { required: false })} />
                                                 <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="ml-2">
                                                     <FaWhatsapp size={24} className="text-lg" />
                                                 </a>
@@ -103,8 +101,14 @@ function DetalhesContato({ abrir, onFechar, dados }: PropriedadesDialogEdicao<Co
                                     <h3 className="text-lg font-semibold">Sobre</h3>
                                     <div className="grid w-full gap- text-muted-foreground">
                                         <div>
+                                            <Label htmlFor="site">Site</Label>
+                                            <Textarea autoComplete="off" id="site" rows={1}
+                                                {...register('site', { required: false })} />
+                                        </div>
+                                        <div>
+
                                             <Label htmlFor="obs">Observações</Label>
-                                            <Textarea id="obs" rows={5}
+                                            <Textarea autoComplete="off" id="obs" rows={5}
                                                 {...register('descricaoContato', { required: false })} />
                                         </div>
                                     </div>

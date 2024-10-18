@@ -35,9 +35,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Função de login
     async function signIn({ usuario, senhaUsuario }: dadosFormulario) {
         try {
-            //const response = await axios.post('https://api.naturalbit.com.br:705/suportebit/login', { usuario, senhaUsuario });
+            const response = await axios.post('https://api.naturalbit.com.br:705/suportebit/login', { usuario, senhaUsuario });
 
-            const response = await axios.post('http://localhost:8080/suportebit/login', { usuario, senhaUsuario });
+            //const response = await axios.post('http://localhost:8080/suportebit/login', { usuario, senhaUsuario });
 
 
             setIsAuthenticated(true);

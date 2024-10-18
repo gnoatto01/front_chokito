@@ -132,7 +132,6 @@ function RegistroAtividade({ abrir, onFechar }: PropriedadesDialog) {
                                     {...register('tempoGasto', { required: false })} />
                             </div>
 
-
                             <div className="space-y-1">
                                 <Label htmlFor="usuarioSolicitante">Solicitante</Label>
                                 <Select

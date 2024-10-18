@@ -46,7 +46,7 @@ function Sistema() {
 
     useEffect(() => {
         buscarDados();
-    }, [buscarDados]);
+    }, [buscarDados, parametrosFiltro]);
 
 
     function abrirRegistroSistema() {
@@ -57,7 +57,6 @@ function Sistema() {
         setIsRegistroSistemaAberto(false);
         buscarDados();
     }
-
     const abrirDetalhes = (sistema: SistemaNameSpace.EntidadeSistema) => {
         if (sistema && sistema.idSistema) {
             setIsDetalhesSistemaAberto(true);
@@ -175,19 +174,17 @@ function Sistema() {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                <DropdownMenuItem className="cursor-pointer" onClick={() => {setParametrosFiltro('Todos'); buscarDados()}}>
+                                <DropdownMenuItem className="cursor-pointer" onClick={() => {setParametrosFiltro('Todos')}}>
                                     <span>Todos</span>
                                 </DropdownMenuItem>
-                                <DropdownMenuItem className="cursor-pointer" onClick={() => {setParametrosFiltro('Ativo'); buscarDados()}} >
+                                <DropdownMenuItem className="cursor-pointer" onClick={() => {setParametrosFiltro('Ativo')}} >
                                     <span>Ativos</span>
                                 </DropdownMenuItem>
-                                <DropdownMenuItem className="cursor-pointer" onClick={() =>{setParametrosFiltro('Inativo'); buscarDados()}}>
+                                <DropdownMenuItem className="cursor-pointer" onClick={() =>{setParametrosFiltro('Inativo')}}>
                                     <span>Inativos</span>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
-                        <p>Filtro Selecionado: {parametrosFiltro}</p>
-
                     </div>
 
                 </div>

@@ -7,6 +7,7 @@ declare namespace Contato {
         nomeContato: string;
         telefone: string;
         whatsapp: string;
+        site: string; 
         descricaoContato: string;
     }
 }

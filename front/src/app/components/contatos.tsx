@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import DetalhesContato from "./detalhesContato";
 import AlertaDePerigo, { AlertaDeSucesso } from "../../utils/alertas";
-import { FaPlus, FaSearch, FaTrashAlt, FaEdit, FaDownload, FaPaste, FaFileExcel, FaFilePdf, FaDatabase } from 'react-icons/fa';
+import { FaPlus, FaSearch, FaTrashAlt, FaEdit, FaDownload, FaPaste, FaFileExcel, FaFilePdf, FaDatabase, FaTrash } from 'react-icons/fa';
 import RegistroContato from "./registrarContato";
 import { exportarContatoParaPDF, exportarParaExcel } from "../../utils/exports";
 import Layout from "./layoutPrincipal";
@@ -211,39 +211,23 @@ export default function Contatos() {
                     {isSucesso && <AlertaDeSucesso message="Registro excluído com sucesso" />}
                     {filtrarContatos.map((contato) => (
                         <div key={contato.idContato} className="bg-white rounded-lg shadow-md p-4 hover:bg-gray-50 transition">
-                            <div onClick={abrirDetalhes(contato)} className="flex items-center justify-between cursor-pointer">
-                                <div className="flex items-center gap-4">
-                                    <Avatar className="h-12 w-12">
-                                        <AvatarFallback>{contato.nomeContato.slice(0, 2).toUpperCase()}</AvatarFallback>
-                                    </Avatar>
-                                    <div>
-                                        <div className="font-semibold text-lg text-gray-800">{contato.nomeContato}</div>
-                                        <div className="text-gray-600">
-                                            {contato.email}
+                            <div className="flex items-center justify-between cursor-pointer">
+                                <div onClick={abrirDetalhes(contato)} className="flex items-center justify-between cursor-pointer">
+                                    <div className="flex items-center gap-4">
+                                        <Avatar className="h-12 w-12">
+                                            <AvatarFallback>{contato.nomeContato.slice(0, 2).toUpperCase()}</AvatarFallback>
+                                        </Avatar>
+                                        <div>
+                                            <div className="font-semibold text-lg text-gray-800">{contato.nomeContato}</div>
+                                            <div className="text-gray-600">
+                                                {contato.email}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button variant="outline" size="icon" className="h-8 w-8">
-                                            <IconeDetalhes color="#2a4564" className="h-5 w-5" />
-                                            <span className="sr-only">Opções</span>
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
-                                        <DropdownMenuLabel>Opções</DropdownMenuLabel>
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuItem onClick={abrirDetalhes(contato)} className="cursor-pointer flex items-center gap-2">
-                                            <FaEdit className="text-blue-500" />
-                                            <span>Editar</span>
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem onClick={() => handleAlertaPerigo(contato.idContato)} className="cursor-pointer flex items-center gap-2 text-red-600">
-                                            <FaTrashAlt />
-                                            <span>Excluir</span>
-                                        </DropdownMenuItem>
-                                        <DropdownMenuSeparator />
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
+                                <Button variant="outline" size="icon" onClick={() => handleAlertaPerigo(contato.idContato)} className="h-8 w-8">
+                                    <FaTrashAlt color="#2a4564" className="h-4 w-4" />
+                                </Button>
                             </div>
                             <DetalhesContato abrir={isDetalhesAberto} onFechar={fecharDetalhes} dados={contatoSelecionado} />
                         </div>
